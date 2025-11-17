@@ -1,21 +1,25 @@
 'use client'
 
-import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { Upload, Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useSupabaseClient, useSession } from '@supabase/auth-helpers-react'
+import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const CATEGORIAS_GASTOS = [
   'Alimentación', 'Transporte', 'Vivienda', 'Salud',
-  'Entretenimiento', 'Educación', 'Otros Gastos'
+  'Entretenimiento', 'Educación', 'Ahorro/inversión', 'Otros gastos'
 ]
 
 const CATEGORIAS_INGRESOS = [
-  'Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros Ingresos'
+  'Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros ingresos'
 ]
 
 const METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Transferencia']
 
 export default function RegistroPage() {
+  const supabase = useSupabaseClient()
+  const session = useSession()
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
@@ -26,25 +30,20 @@ export default function RegistroPage() {
   const [descripcion, setDescripcion] = useState('')
   const [metodo_pago, setMetodoPago] = useState('Efectivo')
   const [registrado_por, setRegistradoPor] = useState('')
-  const [foto, setFoto] = useState<File | null>(null)
-  const [fotoPreview, setFotoPreview] = useState<string | null>(null)
-
   const categoriasActuales = tipo === 'gasto' ? CATEGORIAS_GASTOS : CATEGORIAS_INGRESOS
 
-  const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setFoto(file)
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setFotoPreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+  useEffect(() => {
+    if (session === null) {
+      router.push('/login')
     }
-  }
+  }, [session, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!session) {
+      setError('Debes iniciar sesión')
+      return
+    }
     setLoading(true)
     setError('')
     setSuccess(false)
@@ -58,25 +57,6 @@ export default function RegistroPage() {
         throw new Error('Debe seleccionar una categoría')
       }
 
-      let foto_url = null
-
-      // Subir foto a Supabase Storage si existe
-      if (foto) {
-        const fileName = `${Date.now()}-${foto.name}`
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('facturas')
-          .upload(fileName, foto)
-
-        if (uploadError) throw uploadError
-
-        // Obtener URL pública
-        const { data: { publicUrl } } = supabase.storage
-          .from('facturas')
-          .getPublicUrl(fileName)
-
-        foto_url = publicUrl
-      }
-
       // Insertar transacción en BD
       const { error: insertError } = await supabase
         .from('transacciones')
@@ -88,8 +68,9 @@ export default function RegistroPage() {
           descripcion: descripcion || null,
           metodo_pago,
           registrado_por,
-          foto_url,
+          foto_url: null,
           fecha: new Date().toISOString(),
+          usuario_id: session.user.id,
         })
 
       if (insertError) throw insertError
@@ -100,9 +81,6 @@ export default function RegistroPage() {
       setMonto('')
       setCategoria('')
       setDescripcion('')
-      setFoto(null)
-      setFotoPreview(null)
-
       // Reset success después de 3 segundos
       setTimeout(() => setSuccess(false), 3000)
     } catch (err: any) {
@@ -112,17 +90,33 @@ export default function RegistroPage() {
     }
   }
 
+  if (session === null) {
+    return (
+      <main className="p-4 sm:p-6 md:p-8 max-w-3xl mx-auto text-center text-gray-600">
+        Redirigiendo al inicio de sesión...
+      </main>
+    )
+  }
+
+  if (!session) {
+    return (
+      <main className="p-4 sm:p-6 md:p-8 max-w-3xl mx-auto text-center text-gray-600">
+        Cargando sesión...
+      </main>
+    )
+  }
+
   return (
     <main className="p-4 sm:p-6 md:p-8 max-w-3xl mx-auto">
       <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
-        Registrar Transacción
+        Registrar transacción
       </h2>
 
       <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-6">
         {/* Tipo de transacción */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Tipo de Transacción
+            Tipo de transacción
           </label>
           <div className="flex gap-4">
             <button
@@ -213,7 +207,7 @@ export default function RegistroPage() {
         {/* Método de pago */}
         <div>
           <label htmlFor="metodo_pago" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Método de Pago
+            Método de pago
           </label>
           <select
             id="metodo_pago"
@@ -232,7 +226,7 @@ export default function RegistroPage() {
         {/* Registrado por */}
         <div>
           <label htmlFor="registrado_por" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Registrado Por (opcional)
+            Registrado por (opcional)
           </label>
           <input
             type="text"
@@ -244,32 +238,9 @@ export default function RegistroPage() {
           />
         </div>
 
-        {/* Upload foto */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Foto del Ticket/Factura (opcional)
-          </label>
-          <div className="flex items-center gap-4">
-            <label className="flex-1 cursor-pointer">
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-emerald-500 transition-colors">
-                <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {foto ? foto.name : 'Click para subir imagen'}
-                </span>
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFotoChange}
-                className="hidden"
-              />
-            </label>
-          </div>
-          {fotoPreview && (
-            <div className="mt-4">
-              <img src={fotoPreview} alt="Preview" className="max-w-xs rounded-lg shadow-md" />
-            </div>
-          )}
+        {/* Nota temporal */}
+        <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 text-sm">
+          La carga de fotos de tickets/facturas está deshabilitada temporalmente.
         </div>
 
         {/* Success/Error messages */}
@@ -299,7 +270,7 @@ export default function RegistroPage() {
               Registrando...
             </>
           ) : (
-            <>Registrar {tipo === 'gasto' ? 'Gasto' : 'Ingreso'}</>
+            <>Registrar {tipo === 'gasto' ? 'gasto' : 'ingreso'}</>
           )}
         </button>
       </form>

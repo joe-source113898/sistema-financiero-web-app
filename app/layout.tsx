@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { Header } from "@/components/Header";
+import type { Metadata, Viewport } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import { Header } from '@/components/Header'
+import { SupabaseProvider } from '@/components/SupabaseProvider'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,9 +16,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sistema Financiero - Dashboard",
-  description: "Sistema de gestión financiera personal y familiar",
-};
+  title: 'Sistema financiero · dashboard',
+  description: 'Sistema de gestión financiera personal y familiar',
+  applicationName: 'Sistema financiero',
+  manifest: '/manifest.webmanifest',
+  icons: {
+    icon: '/icons/icon-192x192.png',
+    apple: '/apple-touch-icon.png',
+    shortcut: '/favicon.ico',
+  },
+  appleWebApp: {
+    capable: true,
+    title: 'Sistema financiero',
+    statusBarStyle: 'default',
+  },
+  formatDetection: {
+    telephone: false,
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f8fafc' },
+    { media: '(prefers-color-scheme: dark)', color: '#020617' },
+  ],
+}
 
 export default function RootLayout({
   children,
@@ -36,10 +59,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-            <Header />
-            {children}
-          </div>
+          <SupabaseProvider>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+              <Header />
+              {children}
+            </div>
+          </SupabaseProvider>
         </ThemeProvider>
       </body>
     </html>

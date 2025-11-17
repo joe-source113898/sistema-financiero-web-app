@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { supabase } from '@/lib/supabase'
+import { useSupabaseClient, useSession } from '@supabase/auth-helpers-react'
 import { KPICard } from '@/components/KPICard'
 import { DataViews } from '@/components/DataViews'
 import { Calendar, TrendingUp, DollarSign } from 'lucide-react'
@@ -16,6 +16,8 @@ const TrendChart = dynamic(() => import('@/components/TrendChart').then(mod => (
 type Vista = 'diaria' | 'semanal' | 'mensual' | 'personalizada'
 
 export default function HomePage() {
+  const supabase = useSupabaseClient()
+  const session = useSession()
   const [vista, setVista] = useState<Vista>('mensual')
   const [fechaInicio, setFechaInicio] = useState('')
   const [fechaFin, setFechaFin] = useState('')
@@ -32,9 +34,10 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    procesarGastosRecurrentes() // Procesar gastos automáticos primero
+    if (!session) return
+    procesarGastosRecurrentes()
     fetchKPIs()
-  }, [vista, fechaInicio, fechaFin])
+  }, [vista, fechaInicio, fechaFin, session])
 
   const procesarGastosRecurrentes = async () => {
     try {
@@ -95,6 +98,7 @@ export default function HomePage() {
       .select('*')
       .gte('fecha', startDate.toISOString())
       .lte('fecha', endDate.toISOString())
+      .eq('usuario_id', session?.user.id)
 
     if (data) {
       // Calcular totales agrupando por tipo
@@ -144,12 +148,20 @@ export default function HomePage() {
     </div>
   )
 
+  if (!session) {
+    return (
+      <main className="p-8 text-center text-gray-600">
+        Cargando sesión...
+      </main>
+    )
+  }
+
   return (
     <main className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
       {/* Header con gradiente */}
       <div className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 dark:from-emerald-400 dark:to-cyan-400 bg-clip-text text-transparent mb-2">
-          Dashboard Financiero
+          Dashboard financiero
         </h1>
         <p className="text-gray-600 dark:text-gray-400 text-sm">
           Vista general de tus finanzas · {getVistaLabel()}
@@ -165,7 +177,7 @@ export default function HomePage() {
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            📅 Período de Análisis
+            📅 Período de análisis
           </h3>
           <div className="flex gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg flex-wrap">
             <button
@@ -219,14 +231,14 @@ export default function HomePage() {
         {showDatePicker && (
           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-800">
             <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-              📅 Selecciona Periodo Personalizado
+              📅 Selecciona periodo personalizado
             </h4>
 
             {/* Date inputs */}
             <div className="flex flex-col sm:flex-row gap-4 items-end">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Fecha Inicio
+                  Fecha de inicio
                 </label>
                 <input
                   type="date"
@@ -237,7 +249,7 @@ export default function HomePage() {
               </div>
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Fecha Fin
+                  Fecha de fin
                 </label>
                 <input
                   type="date"
@@ -272,13 +284,13 @@ export default function HomePage() {
           color="red"
         />
         <KPICard
-          title="Balance Neto"
+          title="Balance neto"
           value={kpis.balance}
           icon="balance"
           color={kpis.balance > 0 ? 'green' : 'red'}
         />
         <KPICard
-          title="Transacciones"
+          title="Total de transacciones"
           value={kpis.transacciones}
           icon="transactions"
           color="blue"

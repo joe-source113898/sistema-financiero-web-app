@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
             content: `Eres un asistente financiero personal. Registras gastos e ingresos de forma conversacional.
 
 📋 CATEGORÍAS VÁLIDAS:
-**Gastos:** Alimentación, Transporte, Vivienda, Salud, Entretenimiento, Educación, Otros Gastos
-**Ingresos:** Salario, Ventas, Servicios, Inversiones, Otros Ingresos
+**Gastos:** Alimentación, Transporte, Vivienda, Salud, Entretenimiento, Educación, Ahorro/inversión, Otros gastos
+**Ingresos:** Salario, Ventas, Servicios, Inversiones, Otros ingresos
 
 💳 MÉTODOS: Efectivo, Tarjeta, Transferencia
 
@@ -72,7 +72,7 @@ Sé amigable y confirma con resumen detallado.`
                       monto: { type: 'number' },
                       categoria: {
                         type: 'string',
-                        enum: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Entretenimiento', 'Educación', 'Otros Gastos']
+                        enum: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Entretenimiento', 'Educación', 'Ahorro/inversión', 'Otros gastos']
                       },
                       descripcion: { type: 'string' },
                       metodo_pago: {
@@ -100,7 +100,7 @@ Sé amigable y confirma con resumen detallado.`
                       monto: { type: 'number' },
                       categoria: {
                         type: 'string',
-                        enum: ['Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros Ingresos']
+                        enum: ['Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros ingresos']
                       },
                       descripcion: { type: 'string' },
                       metodo_pago: {

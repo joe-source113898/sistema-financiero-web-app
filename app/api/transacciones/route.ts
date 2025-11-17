@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { getCookieStore } from '@/lib/getCookieStore'
 
 export async function GET(request: Request) {
+  const cookieStore = await getCookieStore()
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  }
+
   const { searchParams } = new URL(request.url)
   const vista = searchParams.get('vista') || 'mensual' // diaria, semanal, mensual, personalizada
   const fechaInicio = searchParams.get('fecha_inicio')
@@ -42,7 +49,7 @@ export async function GET(request: Request) {
     query = query.gte('fecha', twelveMonthsAgo.toISOString())
   }
 
-  const { data, error } = await query.limit(500)
+  const { data, error } = await query.eq('usuario_id', user.id).limit(500)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
 - Si es screenshot de chat, foto aleatoria, o documento que NO sea ticket → marca "es_ticket": false
 
 **CATEGORÍAS VÁLIDAS DEL SISTEMA:**
-- Gastos: Alimentación, Transporte, Vivienda, Salud, Entretenimiento, Educación, Otros Gastos
-- Ingresos: Salario, Ventas, Servicios, Inversiones, Otros Ingresos
+- Gastos: Alimentación, Transporte, Vivienda, Salud, Entretenimiento, Educación, Ahorro/inversión, Otros gastos
+- Ingresos: Salario, Ventas, Servicios, Inversiones, Otros ingresos
 
 **INSTRUCCIONES SI ES TICKET:**
 1. Extrae el MONTO TOTAL (solo número, sin símbolos)
@@ -151,7 +151,7 @@ Si NO ES ticket (screenshot, foto aleatoria, etc):
       ocrData = {
         monto: null,
         comercio: 'Desconocido',
-        categoria_sugerida: 'Otros Gastos',
+        categoria_sugerida: 'Otros gastos',
         items: [],
         descripcion: analysisText,
       }
@@ -179,7 +179,7 @@ Si quieres registrar algo manualmente, dime:
 
 💰 **Monto:** $${ocrData.monto?.toLocaleString('es-MX') || 'No detectado'}
 🏪 **Comercio:** ${ocrData.comercio || 'No detectado'}
-📁 **Categoría sugerida:** ${ocrData.categoria_sugerida || 'Otros Gastos'}
+📁 **Categoría sugerida:** ${ocrData.categoria_sugerida || 'Otros gastos'}
 ${ocrData.items && ocrData.items.length > 0 ? `📋 **Items:** ${ocrData.items.join(', ')}` : ''}
 ${ocrData.fecha ? `📅 **Fecha:** ${ocrData.fecha}` : ''}
 

@@ -189,15 +189,15 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
       {!hideControls && (
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-            📊 Vistas de Datos
+            📊 Vistas de datos
           </h3>
-          <div className="flex gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg flex-wrap">
+          <div className="flex gap-2 bg-[var(--muted-bg)] p-1 rounded-full flex-wrap border border-[var(--card-border)]">
           <button
             onClick={() => setVista('diaria')}
-            className={`px-4 py-2 rounded-md font-medium transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
               vista === 'diaria'
-                ? 'bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-[var(--card-bg)] text-[var(--accent)] shadow-md'
+                : 'text-[var(--muted)] hover:text-[var(--foreground)]'
             }`}
           >
             <Calendar className="w-4 h-4" />
@@ -205,10 +205,10 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
           </button>
           <button
             onClick={() => setVista('semanal')}
-            className={`px-4 py-2 rounded-md font-medium transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
               vista === 'semanal'
-                ? 'bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-[var(--card-bg)] text-[var(--accent)] shadow-md'
+                : 'text-[var(--muted)] hover:text-[var(--foreground)]'
             }`}
           >
             <TrendingUp className="w-4 h-4" />
@@ -216,10 +216,10 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
           </button>
           <button
             onClick={() => setVista('mensual')}
-            className={`px-4 py-2 rounded-md font-medium transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
               vista === 'mensual'
-                ? 'bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-[var(--card-bg)] text-[var(--accent)] shadow-md'
+                : 'text-[var(--muted)] hover:text-[var(--foreground)]'
             }`}
           >
             <DollarSign className="w-4 h-4" />
@@ -227,10 +227,10 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
           </button>
           <button
             onClick={() => setShowDatePicker(!showDatePicker)}
-            className={`px-4 py-2 rounded-md font-medium transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
               vista === 'personalizada'
-                ? 'bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-[var(--card-bg)] text-[var(--accent)] shadow-md'
+                : 'text-[var(--muted)] hover:text-[var(--foreground)]'
             }`}
           >
             <Calendar className="w-4 h-4" />
@@ -248,25 +248,25 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
           </h4>
           <div className="flex flex-col sm:flex-row gap-4 items-end">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Fecha Inicio
-              </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Fecha de inicio
+                </label>
               <input
                 type="date"
                 value={fechaInicio}
                 onChange={(e) => setFechaInicio(e.target.value)}
-                className="w-full p-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:ring-2 focus:ring-[var(--accent)]"
               />
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Fecha Fin
+                Fecha de fin
               </label>
               <input
                 type="date"
                 value={fechaFin}
                 onChange={(e) => setFechaFin(e.target.value)}
-                className="w-full p-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:ring-2 focus:ring-[var(--accent)]"
               />
             </div>
             <button
@@ -281,42 +281,42 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
       )}
 
       {/* Filtros */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md border border-gray-200 dark:border-gray-700">
+      <div className="bg-[var(--card-bg)] rounded-2xl p-4 shadow-xl border border-[var(--card-border)]">
         <div className="flex flex-wrap gap-4 items-center">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por tipo:</span>
+          <span className="text-sm font-medium text-[var(--muted)]">Filtrar por tipo:</span>
           <div className="flex gap-2">
             <button
               onClick={() => setFiltroTipo('todos')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 filtroTipo === 'todos'
-                  ? 'bg-emerald-500 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent)]/30'
+                  : 'bg-[var(--muted-bg)] text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]'
               }`}
             >
               Todos
             </button>
             <button
               onClick={() => setFiltroTipo('ingreso')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 filtroTipo === 'ingreso'
-                  ? 'bg-green-500 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                  : 'bg-[var(--muted-bg)] text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]'
               }`}
             >
               Ingresos
             </button>
             <button
               onClick={() => setFiltroTipo('gasto')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 filtroTipo === 'gasto'
-                  ? 'bg-red-500 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30'
+                  : 'bg-[var(--muted-bg)] text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]'
               }`}
             >
               Gastos
             </button>
           </div>
-          <div className="ml-auto text-sm text-gray-600 dark:text-gray-400">
+          <div className="ml-auto text-sm text-[var(--muted)]">
             {transaccionesFiltradas.length} transacciones
           </div>
         </div>
@@ -324,29 +324,29 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
       {/* Resumen de Totales */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-xl border-2 border-green-200 dark:border-green-800">
-          <div className="text-sm text-green-700 dark:text-green-300 mb-1">Total Ingresos</div>
-          <div className="text-2xl font-bold text-green-900 dark:text-green-100">
+        <div className="bg-gradient-to-br from-emerald-100/70 via-white to-white dark:from-emerald-900/30 dark:via-[#0f1220] dark:to-[#090c16] p-6 rounded-2xl border border-emerald-300/60 dark:border-emerald-800">
+          <div className="text-sm text-emerald-700 dark:text-emerald-200 mb-1">Total de ingresos</div>
+          <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
             ${totales.ingresos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 p-6 rounded-xl border-2 border-red-200 dark:border-red-800">
-          <div className="text-sm text-red-700 dark:text-red-300 mb-1">Total Gastos</div>
-          <div className="text-2xl font-bold text-red-900 dark:text-red-100">
+        <div className="bg-gradient-to-br from-rose-100/70 via-white to-white dark:from-rose-900/30 dark:via-[#0f1220] dark:to-[#090c16] p-6 rounded-2xl border border-rose-300/60 dark:border-rose-800">
+          <div className="text-sm text-rose-700 dark:text-rose-200 mb-1">Total de gastos</div>
+          <div className="text-2xl font-bold text-rose-900 dark:text-rose-100">
             ${totales.gastos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </div>
         </div>
 
-        <div className={`bg-gradient-to-br p-6 rounded-xl border-2 ${
+        <div className={`bg-gradient-to-br p-6 rounded-2xl border ${
           balance >= 0
-            ? 'from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-800'
-            : 'from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-orange-200 dark:border-orange-800'
+            ? 'from-cyan-100/70 via-white to-white dark:from-cyan-900/30 dark:via-[#0f1220] dark:to-[#090c16] border-cyan-300/60 dark:border-cyan-800'
+            : 'from-amber-100/70 via-white to-white dark:from-amber-900/30 dark:via-[#0f1220] dark:to-[#090c16] border-amber-300/60 dark:border-amber-800'
         }`}>
-          <div className={`text-sm mb-1 ${balance >= 0 ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700 dark:text-orange-300'}`}>
-            Balance Neto
+          <div className={`text-sm mb-1 ${balance >= 0 ? 'text-cyan-700 dark:text-cyan-200' : 'text-amber-700 dark:text-amber-200'}`}>
+            Balance neto
           </div>
-          <div className={`text-2xl font-bold ${balance >= 0 ? 'text-blue-900 dark:text-blue-100' : 'text-orange-900 dark:text-orange-100'}`}>
+          <div className={`text-2xl font-bold ${balance >= 0 ? 'text-cyan-900 dark:text-cyan-100' : 'text-amber-900 dark:text-amber-100'}`}>
             ${balance.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </div>
         </div>
@@ -362,8 +362,8 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
       {/* Tablas agrupadas */}
       {!loading && gruposData.length === 0 && (
-        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-xl">
-          <p className="text-gray-600 dark:text-gray-400">No hay transacciones en este periodo</p>
+        <div className="text-center py-12 bg-[var(--muted-bg)] rounded-2xl border border-[var(--card-border)]">
+          <p className="text-[var(--muted)]">No hay transacciones en este período</p>
         </div>
       )}
 
@@ -371,11 +371,11 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
         const totalPeriodo = txs.reduce((sum, t) => sum + (t.tipo === 'ingreso' ? t.monto : -t.monto), 0)
 
         return (
-          <div key={periodo} className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-6 py-4">
+          <div key={periodo} className="bg-[var(--card-bg)] rounded-2xl shadow-xl border border-[var(--card-border)] overflow-hidden">
+            <div className="bg-gradient-to-r from-[var(--accent)] to-[#22d3ee] text-white px-6 py-4">
               <div className="flex justify-between items-center">
                 <h4 className="text-lg font-bold">{periodo}</h4>
-                <span className={`font-bold ${totalPeriodo >= 0 ? 'text-green-200' : 'text-red-200'}`}>
+                <span className={`font-bold ${totalPeriodo >= 0 ? 'text-green-100' : 'text-rose-100'}`}>
                   ${totalPeriodo.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                 </span>
               </div>
@@ -498,19 +498,19 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
       })}
 
       {/* Controles de Paginación */}
-      <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+      <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 bg-[var(--card-bg)] rounded-2xl border border-[var(--card-border)] shadow-sm">
         {/* Info de registros */}
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="text-sm text-[var(--muted)]">
           Mostrando{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">
+          <span className="font-semibold text-[var(--foreground)]">
             {transaccionesFiltradas.length === 0 ? 0 : indiceInicio + 1}
           </span>
           {' '}-{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">
+          <span className="font-semibold text-[var(--foreground)]">
             {Math.min(indiceFin, transaccionesFiltradas.length)}
           </span>
           {' '}de{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">
+          <span className="font-semibold text-[var(--foreground)]">
             {transaccionesFiltradas.length}
           </span>
           {' '}transacciones
@@ -520,7 +520,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
         <div className="flex items-center gap-3">
           {/* Items por página */}
           <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600 dark:text-gray-400">
+            <label className="text-sm text-[var(--muted)]">
               Por página:
             </label>
             <select
@@ -529,7 +529,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                 setItemsPorPagina(Number(e.target.value))
                 setPaginaActual(1)
               }}
-              className="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+              className="px-3 py-1.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] focus:ring-2 focus:ring-[var(--accent)]"
             >
               <option value={20}>20</option>
               <option value={50}>50</option>
@@ -543,18 +543,18 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
             <button
               onClick={() => setPaginaActual(prev => Math.max(1, prev - 1))}
               disabled={paginaActual === 1}
-              className="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="px-3 py-1.5 bg-[var(--muted-bg)] border border-[var(--card-border)] rounded-full text-sm font-medium text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               Anterior
             </button>
 
-            <span className="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400">
+            <span className="px-3 py-1.5 text-sm text-[var(--muted)]">
               Página{' '}
-              <span className="font-semibold text-gray-900 dark:text-white">
+              <span className="font-semibold text-[var(--foreground)]">
                 {paginaActual}
               </span>
               {' '}de{' '}
-              <span className="font-semibold text-gray-900 dark:text-white">
+              <span className="font-semibold text-[var(--foreground)]">
                 {totalPaginas || 1}
               </span>
             </span>
@@ -562,7 +562,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
             <button
               onClick={() => setPaginaActual(prev => Math.min(totalPaginas, prev + 1))}
               disabled={paginaActual >= totalPaginas}
-              className="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="px-3 py-1.5 bg-[var(--muted-bg)] border border-[var(--card-border)] rounded-full text-sm font-medium text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               Siguiente
             </button>

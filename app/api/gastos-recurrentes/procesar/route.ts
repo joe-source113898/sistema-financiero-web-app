@@ -1,16 +1,21 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { getCookieStore } from '@/lib/getCookieStore'
 
 /**
  * Procesa gastos recurrentes automáticamente
  * Verifica si hay gastos programados para hoy que no se hayan registrado
  */
 export async function POST() {
+  const cookieStore = await getCookieStore()
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+  if (userError || !user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  }
   const hoy = new Date()
   const diaActual = hoy.getDate()
   const fechaHoy = hoy.toISOString().split('T')[0] // YYYY-MM-DD
@@ -65,6 +70,7 @@ export async function POST() {
           metodo_pago: 'Tarjeta',
           registrado_por: 'Sistema Automático',
           fecha: hoy.toISOString(),
+          usuario_id: user.id,
         })
         .select()
 

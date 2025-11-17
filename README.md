@@ -1,7 +1,6 @@
-# 💰 Sistema Financiero
+# 💰 Sistema financiero
 
-> **Sistema de gestión financiera personal con IA integrada**
-> Dashboard moderno + Chat con IA + OCR para tickets + Análisis en tiempo real
+> **Suite para controlar tus finanzas con IA, dashboard moderno y OCR para tickets.**
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.5.4-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -10,83 +9,98 @@
 
 ---
 
-## 🎯 ¿Qué es esto?
+## 🎯 ¿Qué incluye?
 
-Un sistema completo para **rastrear gastos e ingresos** con:
-- 📊 **Dashboard visual** con KPIs y gráficas
-- 🤖 **Agente IA** que registra transacciones por chat
-- 📸 **OCR** para escanear tickets/recibos
-- 📝 **Registro manual** con formularios
-- 📈 **Reportes** con análisis de tendencias
+- 📊 **Dashboard visual** con KPIs y gráficas.
+- 🤖 **Agente IA** que registra transacciones por chat y entiende tickets.
+- 📸 **OCR** con Gemini Vision para leer facturas/fotos.
+- 📝 **Formularios manuales** para quien prefiere entrada tradicional.
+- ♻️ **Gastos recurrentes** y módulo de **ahorro/inversión** dedicado.
 
-**Perfecto para:** Individuos, familias, o pequeños negocios que quieren controlar sus finanzas.
+Funciona perfecto para personas, familias o pequeños negocios que quieren un panorama claro de ingresos/gastos.
 
 ---
 
-## 🤖 FOR AI ASSISTANTS - READ THIS FIRST
+## 🤖 Para asistentes de IA
 
-> **Atención Claude/GPT/Gemini:** Esta sección te explica cómo modificar este proyecto.
-
-### Arquitectura del Proyecto
+### Arquitectura
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│         Next.js 15 (Full-Stack Framework)           │
+│                 Next.js 15 (Full Stack)             │
 ├─────────────────────────────────────────────────────┤
-│  FRONTEND (Client-Side - Runs in Browser)          │
-│  ├─ app/page.tsx          → Dashboard principal    │
-│  ├─ app/registro/         → Formulario manual      │
-│  ├─ app/agente-mejorado/  → Chat con IA            │
-│  └─ components/*.tsx      → UI reutilizable        │
+│ FRONTEND (App Router)                               │
+│ ├─ app/page.tsx               → Dashboard           │
+│ ├─ app/registro/              → Formulario          │
+│ ├─ app/agente-mejorado/       → Chat con IA         │
+│ ├─ app/ahorro-inversion/      → Módulo ahorro       │
+│ └─ components/*.tsx           → UI reutilizable     │
 ├─────────────────────────────────────────────────────┤
-│  BACKEND (Server-Side - Runs in Node.js)           │
-│  └─ app/api/              → API Routes             │
-│      ├─ transacciones/route.ts  → GET transacciones│
-│      ├─ chat/stream/route.ts    → Chat con IA     │
-│      └─ upload-image/route.ts   → OCR de tickets  │
+│ BACKEND (API Routes)                                │
+│ └─ app/api/*                                         │
+│     ├─ transacciones/route.ts → GET transacciones    │
+│     ├─ chat/stream/route.ts   → Chat + function call │
+│     └─ upload-image/route.ts  → OCR + Storage        │
 ├─────────────────────────────────────────────────────┤
-│  DATABASE (Supabase - PostgreSQL)                   │
-│  └─ transacciones table   → ÚNICA tabla necesaria  │
+│ DATABASE (Supabase / PostgreSQL)                    │
+│ ├─ Tabla `transacciones`                            │
+│ ├─ Tabla `objetivos_ahorro`                         │
+│ └─ Tabla `gastos_mensuales`                         │
 └─────────────────────────────────────────────────────┘
 ```
 
-### Database Schema (CRITICAL - Copy/Paste to Supabase)
-
-**ONLY ONE TABLE NEEDED:** `transacciones`
+### Esquema de base de datos (copiar/pegar)
 
 ```sql
--- Table: transacciones (Stores all income and expenses)
-CREATE TABLE transacciones (
-  -- Primary Key
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+-- Objetivos de ahorro
+CREATE TABLE objetivos_ahorro (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  usuario_id UUID REFERENCES auth.users(id),
+  nombre TEXT NOT NULL,
+  meta NUMERIC(10,2),
+  descripcion TEXT,
+  color TEXT,
+  icono TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
 
-  -- Core Transaction Fields
+CREATE INDEX idx_objetivos_usuario ON objetivos_ahorro(usuario_id);
+
+ALTER TABLE objetivos_ahorro ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view objetivos"
+  ON objetivos_ahorro FOR SELECT
+  USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can manage objetivos"
+  ON objetivos_ahorro FOR ALL
+  USING (auth.uid() = usuario_id)
+  WITH CHECK (auth.uid() = usuario_id);
+
+-- Tabla de transacciones (ahora enlaza a objetivos)
+CREATE TABLE transacciones (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   fecha TIMESTAMP NOT NULL DEFAULT NOW(),
   tipo TEXT CHECK (tipo IN ('ingreso', 'gasto')) NOT NULL,
   monto NUMERIC(10, 2) NOT NULL CHECK (monto > 0),
   categoria TEXT NOT NULL,
-
-  -- Optional Details
   concepto TEXT DEFAULT 'Transacción manual',
   descripcion TEXT,
   metodo_pago TEXT CHECK (metodo_pago IN ('Efectivo', 'Tarjeta', 'Transferencia')),
   registrado_por TEXT,
   foto_url TEXT,
-
-  -- Metadata
+  objetivo_id UUID REFERENCES objetivos_ahorro(id),
   usuario_id UUID REFERENCES auth.users(id),
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Indexes for performance
 CREATE INDEX idx_transacciones_fecha ON transacciones(fecha DESC);
 CREATE INDEX idx_transacciones_tipo ON transacciones(tipo);
 CREATE INDEX idx_transacciones_usuario ON transacciones(usuario_id);
+CREATE INDEX idx_transacciones_objetivo ON transacciones(objetivo_id);
 
--- Enable Row Level Security (RLS)
 ALTER TABLE transacciones ENABLE ROW LEVEL SECURITY;
 
--- Policy: Users can only see their own transactions
 CREATE POLICY "Users can view own transactions"
   ON transacciones FOR SELECT
   USING (auth.uid() = usuario_id);
@@ -96,414 +110,278 @@ CREATE POLICY "Users can insert own transactions"
   WITH CHECK (auth.uid() = usuario_id);
 ```
 
-### Valid Categories (Hardcoded - NOT a table)
+La migración incluida (`supabase/migrations/20250221_setup_finanzas.sql`) también crea `gastos_mensuales` para el módulo de recurrentes y añade todos los índices/políticas.
 
-```typescript
-// Gastos (Expenses)
-CATEGORIAS_GASTOS = [
-  'Alimentación', 'Transporte', 'Vivienda', 'Salud',
-  'Entretenimiento', 'Educación', 'Otros Gastos'
-]
+### Categorías y constantes (hardcodeadas)
 
-// Ingresos (Income)
-CATEGORIAS_INGRESOS = [
-  'Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros Ingresos'
-]
-
-// Métodos de Pago
-METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Transferencia']
-```
-
-### Key Files Map
-
-| File Path | Purpose | When to Modify |
-|-----------|---------|----------------|
-| `app/page.tsx` | Dashboard with KPIs and charts | Change dashboard layout/KPIs |
-| `app/api/transacciones/route.ts` | GET endpoint for transactions | Change how data is fetched |
-| `app/api/chat/stream/route.ts` | AI chat with function calling | Modify AI behavior/prompts |
-| `app/api/upload-image/route.ts` | OCR for ticket scanning | Change OCR logic |
-| `components/DataViews.tsx` | Transaction table with filters | Modify table columns/filters |
-| `components/TrendChart.tsx` | Line chart for trends | Change chart visualization |
-| `hooks/useEnhancedChat.ts` | Chat state management | Add chat features |
-| `lib/supabase.ts` | Supabase client config | Change DB connection |
-
-### Common Modifications
-
-**1. Add a new category:**
-```typescript
-// Location: app/registro/page.tsx or app/api/chat/stream/route.ts
+```ts
 const CATEGORIAS_GASTOS = [
   'Alimentación', 'Transporte', 'Vivienda', 'Salud',
-  'Entretenimiento', 'Educación', 'Otros Gastos',
-  'Tu Nueva Categoría'  // ← Add here
+  'Entretenimiento', 'Educación', 'Ahorro/inversión', 'Otros gastos'
 ]
+
+const CATEGORIAS_INGRESOS = [
+  'Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros ingresos'
+]
+
+const METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Transferencia']
 ```
 
-**2. Add a new field to transactions:**
-```sql
--- 1. First, add column to Supabase:
-ALTER TABLE transacciones ADD COLUMN nuevo_campo TEXT;
+### Modificaciones frecuentes
 
--- 2. Then update TypeScript interface in components/DataViews.tsx:
-interface Transaccion {
-  id: string
-  fecha: string
-  tipo: 'gasto' | 'ingreso'
-  categoria: string
-  monto: number
-  descripcion: string
-  metodo_pago: string
-  nuevo_campo: string  // ← Add here
-}
-```
+1. **Agregar categoría:** editar arrays en `app/registro/page.tsx` o `app/api/chat/stream/route.ts`.
+2. **Agregar campo nuevo:** `ALTER TABLE` + actualizar interfaces en `components/DataViews.tsx`.
+3. **Cambiar modelo de IA:** modificar `model` en `app/api/chat/stream/route.ts`.
+4. **Nuevos KPIs:** modificar `fetchKPIs()` en `app/page.tsx`.
 
-**3. Change AI model:**
-```typescript
-// Location: app/api/chat/stream/route.ts (line ~54)
-const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-  body: JSON.stringify({
-    model: 'google/gemini-2.5-flash',  // ← Change model here
-    // Available: 'anthropic/claude-3.5-sonnet', 'openai/gpt-4o', etc.
-  })
-})
-```
-
-**4. Customize dashboard KPIs:**
-```typescript
-// Location: app/page.tsx (lines ~70-97)
-// The fetchKPIs() function calculates totals
-// Modify the logic to add new KPIs or change calculations
-```
-
-### Data Flow
+### Flujo de datos
 
 ```
-User Action → Frontend Component → API Route → Supabase → Response
-     ↓              ↓                   ↓           ↓          ↓
-  Click       app/page.tsx      app/api/**/*.ts  PostgreSQL  JSON
+Acción del usuario → Componente React → Ruta API → Supabase → Respuesta JSON
 ```
 
-**Example: Registering a transaction via AI chat**
-1. User types: "Gasté $200 en gasolina"
-2. `hooks/useEnhancedChat.ts` sends to `/api/chat/stream`
-3. AI (Gemini 2.5 Flash) calls `registrar_gasto` function
-4. Backend inserts to Supabase `transacciones` table
-5. Frontend updates automatically
+Ejemplo: el usuario escribe “Gasté $200 en gasolina” → `/api/chat/stream` → Gemini llama a `registrar_gasto` → se inserta en `transacciones` → dashboard se actualiza.
 
 ---
 
-## 🚀 Quick Start (For Users)
+## 🚀 Guía rápida
 
-### Prerequisites
+### Requisitos
 
-- **Node.js 20+** ([Download](https://nodejs.org/))
-- **Supabase Account** ([Sign Up Free](https://supabase.com/))
-- **OpenRouter API Key** ([Get it here](https://openrouter.ai/)) - Optional for AI features
+- Node.js 20+
+- Cuenta en Supabase
+- (Opcional) API Key de [OpenRouter](https://openrouter.ai/) para IA
 
-### Step 1: Clone Repository
+### 1. Clonar proyecto
 
 ```bash
 git clone https://github.com/danielcarreon/sistema-financiero-app.git
 cd sistema-financiero-app
 ```
 
-### Step 2: Install Dependencies
+### 📱 PWA lista para Android e iOS
+
+- La app ahora genera un `manifest.webmanifest`, íconos adaptativos y un `service worker` con `next-pwa`.  
+- **Modo offline:** cuando no hay red se muestra `public/offline.html` con un mensaje amigable.  
+- **Agregar a inicio:** abre `http://localhost:3000` en tu móvil (Chrome/Edge/ Safari) y usa la opción “Agregar a la pantalla principal”. Se instala como app independiente (display `standalone`).  
+- **Cambios visuales:** se definen `theme_color`, `background_color` y metadatos `appleWebApp` para status bar oscuro/claro.  
+- **Desarrollo:** `npm run dev` trabaja como siempre; para probar el service worker ejecuta `npm run build && npm run start` porque la caché sólo se registra fuera de modo desarrollo.
+
+### 2. Instalar dependencias
 
 ```bash
-npm install
+npm install    # o pnpm install
 ```
 
-### Step 3: Setup Supabase
+### 3. Configurar Supabase
 
-1. Go to [supabase.com](https://supabase.com/) → Create New Project
-2. Go to **SQL Editor** → Paste the SQL schema from above ↑
-3. Click **Run** to create the `transacciones` table
-4. Go to **Project Settings** → **API** → Copy:
-   - `Project URL`
-   - `anon public` key
+1. Crea un proyecto en [supabase.com](https://supabase.com/).
+2. Entra al **SQL Editor** y ejecuta el esquema mostrado arriba (o usa la sección de CLI).
+3. Copia `Project URL` y `anon key` desde **Settings → API**.
 
-### Step 4: Configure Environment Variables
+### 4. Variables de entorno
 
 ```bash
 cp .env.example .env.local
 ```
 
-Edit `.env.local`:
+Edita `.env.local`:
 
 ```env
-# Supabase (REQUIRED)
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-
-# OpenRouter (OPTIONAL - only for AI features)
-OPENROUTER_API_KEY=sk-or-v1-...
-
-# Site URL (for OpenRouter attribution)
+NEXT_PUBLIC_SUPABASE_URL=https://tu-instancia.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=ey...
+OPENROUTER_API_KEY=sk-or-...          # opcional (solo IA)
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-### Step 5: Run Development Server
+### 5. Servidor de desarrollo
 
 ```bash
 npm run dev
+# o pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) 🎉
+Abre [http://localhost:3000](http://localhost:3000). Primer uso: agrega gastos manuales o conversa con el agente IA.
 
-**First time?**
-- Dashboard will show $0.00 (no data yet)
-- Go to **Registro** to add your first transaction
-- Or go to **Agente IA** to chat with the AI
+### 6. Autenticación
+
+- En Supabase → **Authentication → Users** crea al menos un usuario (correo + contraseña).
+- Inicia sesión en [http://localhost:3000/login](http://localhost:3000/login) usando ese correo/contraseña.
+- Todas las rutas (Dashboard, Registro, Ahorro, etc.) requieren sesión y los datos se guardan asociados a ese usuario.
+
+### ⚙️ Automatizar Supabase con CLI
+
+Ya incluimos `supabase/config.toml` y una migración. Solo haz:
+
+```bash
+brew install supabase/tap/supabase   # o npm install -g supabase
+supabase login                       # pega tu access token
+supabase link --project-ref TU_REF --env-file .env.local
+supabase db push                     # aplica schema y políticas
+supabase storage create-bucket facturas --public
+```
+
+Cada que edites `supabase/migrations`, ejecuta `supabase db push` otra vez. El bucket `facturas` solo se crea una vez.
 
 ---
 
-## 📁 Project Structure
+## 📁 Estructura
 
 ```
 sistema-financiero-app/
-├── app/                          # Next.js App Router
-│   ├── page.tsx                 # 📊 Dashboard (KPIs + Charts)
-│   ├── registro/page.tsx        # 📝 Manual Form
-│   ├── agente-mejorado/page.tsx # 🤖 AI Chat Interface
-│   ├── corte-diario/page.tsx    # 📅 Daily Cut (bulk entry)
-│   └── api/                     # Backend API Routes
-│       ├── transacciones/route.ts  # GET /api/transacciones
-│       ├── chat/stream/route.ts    # POST /api/chat/stream
-│       └── upload-image/route.ts   # POST /api/upload-image (OCR)
-│
-├── components/                   # React Components
-│   ├── Header.tsx               # Navigation bar
-│   ├── KPICard.tsx              # Metric cards (Ingresos/Gastos/Balance)
-│   ├── TrendChart.tsx           # Line chart (Chart.js)
-│   ├── DataViews.tsx            # Transaction table with filters
-│   └── ThemeToggle.tsx          # Dark/Light mode switcher
-│
-├── hooks/                        # Custom React Hooks
-│   ├── useEnhancedChat.ts       # Chat state + streaming
-│   └── useImageUpload.ts        # Image upload to Supabase Storage
-│
-├── lib/                          # Utilities
-│   └── supabase.ts              # Supabase client singleton
-│
-├── .env.example                  # Environment variables template
-├── .env.local                    # Your secrets (git-ignored)
-├── package.json                  # Dependencies
-└── README.md                     # You are here!
+├── app/
+│   ├── page.tsx                  # Dashboard
+│   ├── registro/page.tsx         # Formulario manual
+│   ├── agente-mejorado/page.tsx  # Chat IA + OCR
+│   ├── ahorro-inversion/page.tsx # Sección ahorro/inversión
+│   ├── gastos-recurrentes/...    # Gestión suscripciones
+│   └── api/                      # Rutas backend (Supabase, OpenRouter)
+├── components/                   # Header, KPICard, TrendChart, etc.
+├── hooks/                        # useEnhancedChat, useImageUpload
+├── lib/supabase.ts               # Cliente Supabase singleton
+├── supabase/                     # Config + migraciones para CLI
+├── package.json / pnpm-lock.yaml
+└── README.md
 ```
 
 ---
 
-## 🎨 Features
+## 🎨 Funcionalidades
 
-### 1. Dashboard (Home Page)
+### 1. Dashboard
+- KPIs (ingresos, gastos, balance, #transacciones).
+- Gráfica de tendencia (Chart.js) con filtros diario/semanal/mensual/personalizado.
+- Tabla de transacciones con filtros y controles de rango.
+- Lógica en `app/page.tsx` + `components/DataViews.tsx`.
 
-**What it shows:**
-- KPIs: Total ingresos, gastos, balance, # transacciones
-- Trend chart: Income vs Expenses over time
-- Transaction table: Grouped by date, filterable
-- Date range selector: Daily, Weekly, Monthly, Custom
+### 2. Agente IA
+- Chat natural con Gemini 2.5 Flash vía OpenRouter.
+- Respuestas en streaming (SSE) + indicador de “pensando/escribiendo”.
+- Subida de imágenes al bucket `facturas` y OCR con Gemini Vision.
+- Function calling (`registrar_gasto` / `registrar_ingreso`) para guardar en Supabase.
 
-**How it works:**
-- Fetches from `/api/transacciones?vista=mensual`
-- Groups data by date in frontend (`TrendChart.tsx`)
-- Calculates totals in `app/page.tsx`
+### 3. Registro manual
+- Formulario clásico con validaciones.
+- Subida opcional de foto (se guarda en Storage).
+- Selección de categoría, método de pago, notas y foto.
 
-### 2. Agente IA (AI Chat)
+### 4. Gastos recurrentes
+- CRUD sobre `gastos_mensuales`.
+- Procesamiento automático diario (`app/api/gastos-recurrentes/procesar/route.ts`) que inserta en `transacciones`.
 
-**What it does:**
-- Natural language transaction entry
-- OCR: Upload ticket photos → auto-extract amount/category
-- Streaming responses with "thinking" indicator
-- Function calling to register transactions
-
-**Tech:**
-- Model: `google/gemini-2.5-flash` via OpenRouter
-- Streaming: Server-Sent Events (SSE)
-- OCR: Gemini Vision API
-- Storage: Supabase Storage (`facturas` bucket)
-
-**Example conversation:**
-```
-User: "Gasté $200 en gasolina"
-AI: [Thinking...] → [Writing...]
-    "¡Perfecto! Registré tu gasto:
-    💰 Monto: $200 MXN
-    📁 Categoría: Transporte
-    💳 Método: Efectivo
-
-    ✅ Guardado en la base de datos"
-```
-
-### 3. Registro Manual
-
-**What it does:**
-- Form-based transaction entry
-- Upload invoice/receipt photo (optional)
-- Select category from dropdown
-- Choose payment method
-
-**Use case:** When you prefer forms over chatting with AI
-
-### 4. Corte Diario (Daily Cut)
-
-**What it does:**
-- Bulk entry for multiple transactions at once
-- Useful for end-of-day reconciliation
-- Registers all categories in one form
-
-**Use case:** Restaurant/retail businesses doing daily cash counts
+### 5. Ahorro e inversión
+- Nueva sección `app/ahorro-inversion/page.tsx` con **objetivos de ahorro** (tabla `objetivos_ahorro`).
+- Registra aportes/retiros por objetivo y visualiza el balance acumulado, metas y porcentaje completado.
+- Mini formulario para crear objetivos, selector de objetivo en cada movimiento y botón de “reset” que limpia transacciones + metas.
+- Gráficas (donut + línea) que muestran distribución y evolución de los movimientos.
 
 ---
 
-## 🛠️ Development
-
-### Available Scripts
+## 🛠️ Desarrollo
 
 ```bash
-npm run dev      # Start development server (port 3000)
-npm run build    # Build for production
-npm run start    # Run production build locally
+npm run dev     # desarrollo
+npm run build   # build producción
+npm run start   # sirve build
 ```
 
-### Tech Stack Details
+### Stack
 
-**Frontend:**
-- **Next.js 15.5.4** - React framework with App Router
-- **React 19** - UI library
-- **TypeScript 5** - Type safety
-- **Tailwind CSS 4** - Utility-first styling
-- **Chart.js** - Data visualization
-- **Lucide React** - Icon library
-- **next-themes** - Dark mode support
-
-**Backend:**
-- **Next.js API Routes** - Serverless functions
-- **Node.js 20** - Runtime
-- **Supabase SDK** - Database client
-- **OpenRouter API** - Multi-LLM gateway
-
-**Database:**
-- **PostgreSQL** (via Supabase)
-- **Row Level Security** (RLS) enabled
-- **Real-time subscriptions** (not used yet, but available)
+| Capa        | Tecnologías |
+|-------------|-------------|
+| Frontend    | Next.js 15, React 19, TypeScript, Tailwind 4, Chart.js, Lucide |
+| Backend     | Next.js API Routes, Node.js 20, Supabase JS, OpenRouter |
+| IA / OCR    | Gemini 2.5 Flash (chat) y Gemini Vision (tickets) |
+| Base de datos | PostgreSQL (Supabase) + RLS habilitado |
+| Storage     | Supabase Storage (`facturas`) |
 
 ---
 
-## 🚢 Deployment
+## 🚢 Despliegue
 
-### Deploy to Vercel (Recommended)
+### Vercel (recomendado)
 
-1. Push your code to GitHub
-2. Go to [vercel.com](https://vercel.com/) → **New Project**
-3. Import your repository
-4. Add environment variables:
+1. Push a GitHub.
+2. En Vercel → **New Project** → importa repo.
+3. Configura variables:
    ```
    NEXT_PUBLIC_SUPABASE_URL=...
    NEXT_PUBLIC_SUPABASE_ANON_KEY=...
    OPENROUTER_API_KEY=...
-   NEXT_PUBLIC_SITE_URL=https://your-app.vercel.app
+   NEXT_PUBLIC_SITE_URL=https://tu-app.vercel.app
    ```
-5. Click **Deploy** → Done in ~2 minutes!
+4. Deploy (≈2 minutos) → listo.
 
-**Why Vercel?**
-- Zero config (detects Next.js automatically)
-- Free hobby tier
-- Global CDN
-- Automatic HTTPS
-- CI/CD built-in
+### Otros proveedores
 
-### Other Platforms
-
-Also works on:
-- **Netlify** - Similar to Vercel
-- **Railway** - Supports PostgreSQL + Next.js
-- **Render** - Good for full-stack apps
-- **Cloudflare Pages** - Fast edge deployment
+Netlify, Railway, Render o Cloudflare Pages funcionan igual (usa Node 20 + variables de entorno).
 
 ---
 
-## 🔐 Security Notes
+## 🔐 Seguridad
 
-### Environment Variables
-- **NEVER commit `.env.local`** to GitHub
-- Use Vercel/Netlify UI to set production secrets
-- `.env.example` is safe to commit (no real values)
-
-### Supabase RLS Policies
-- **Row Level Security (RLS)** is ENABLED
-- Users can only see their own transactions
-- Policies are defined in the SQL schema above
-
-### API Keys
-- **OpenRouter API Key** - Keep secret, server-side only
-- **Supabase Anon Key** - Safe to expose (read-only without RLS bypass)
+- No subas `.env.local`; solo comparte `.env.example`.
+- Configura las RLS en Supabase (ya incluidas en la migración).
+- Mantén el `OPENROUTER_API_KEY` privado (solo servidor).
+- El `anon key` de Supabase puede estar en el frontend gracias a RLS.
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contribuciones
 
-Contributions welcome! Please:
+1. Haz fork.
+2. Crea rama: `git checkout -b feat/mi-cambio`.
+3. Commits siguiendo [Conventional Commits](https://www.conventionalcommits.org/).
+4. PR a `main`.
 
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'feat: add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-### Commit Convention
-
-Use [Conventional Commits](https://www.conventionalcommits.org/):
-
+Etiquetas sugeridas:
 ```
-feat: new feature
-fix: bug fix
-docs: documentation changes
-style: formatting, semicolons, etc.
-refactor: code refactoring
-test: add tests
-chore: maintenance
+feat: nueva funcionalidad
+fix: corrección
+docs: documentación
+style: estilo/formato
+refactor: refactorización
+test: pruebas
+chore: mantenimiento
 ```
 
 ---
 
-## 📄 License
+## 📄 Licencia
 
-MIT License - See [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Credits
-
-- **[Next.js](https://nextjs.org/)** - The React Framework
-- **[Supabase](https://supabase.com/)** - Open Source Firebase Alternative
-- **[OpenRouter](https://openrouter.ai/)** - Unified LLM API
-- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-First CSS
-- **[Chart.js](https://www.chartjs.org/)** - Simple Charting
-- **[Lucide Icons](https://lucide.dev/)** - Beautiful Icons
+MIT – consulta el archivo [LICENSE](LICENSE).
 
 ---
 
-## 📧 Support
+## 🙏 Créditos
 
-- **Issues:** [GitHub Issues](https://github.com/danielcarreon/sistema-financiero-app/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/danielcarreon/sistema-financiero-app/discussions)
-- **Email:** daniel.carreon@example.com
+- [Next.js](https://nextjs.org/)
+- [Supabase](https://supabase.com/)
+- [OpenRouter](https://openrouter.ai/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Chart.js](https://www.chartjs.org/)
+- [Lucide Icons](https://lucide.dev/)
 
 ---
 
-## 🎓 Learn More
+## 📧 Soporte
 
-- **Next.js Docs:** [nextjs.org/docs](https://nextjs.org/docs)
-- **Supabase Docs:** [supabase.com/docs](https://supabase.com/docs)
-- **OpenRouter Docs:** [openrouter.ai/docs](https://openrouter.ai/docs)
-- **Tailwind CSS Docs:** [tailwindcss.com/docs](https://tailwindcss.com/docs)
+- Issues: [GitHub Issues](https://github.com/danielcarreon/sistema-financiero-app/issues)
+- Discusiones: [GitHub Discussions](https://github.com/danielcarreon/sistema-financiero-app/discussions)
+- Email: daniel.carreon@example.com
+
+---
+
+## 📚 Recursos útiles
+
+- [Documentación Next.js](https://nextjs.org/docs)
+- [Documentación Supabase](https://supabase.com/docs)
+- [Documentación OpenRouter](https://openrouter.ai/docs)
+- [Documentación Tailwind](https://tailwindcss.com/docs)
 
 ---
 
 <div align="center">
-
-**Built with ❤️ using [Claude Code](https://claude.com/claude-code)**
-
-⭐ Star this repo if you find it useful!
-
+Hecho con ❤️ y mucha automatización.
+<br/>⭐ Dale una estrella si este proyecto te resulta útil.
 </div>

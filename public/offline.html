@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modo sin conexión · Sistema financiero</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+      body {
+        margin: 0;
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        background: #f4f6fb;
+        color: #0f172a;
+        padding: 2rem;
+      }
+      .card {
+        max-width: 420px;
+        background: #fff;
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 25px 60px rgba(15, 23, 42, 0.1);
+        text-align: center;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      p {
+        color: #475569;
+        margin-bottom: 1.5rem;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 999px;
+        background: #0ea5e9;
+        color: #fff;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="badge">
+        <span aria-hidden="true">📴</span>
+        Sin conexión
+      </div>
+      <h1>No pudimos actualizar la información</h1>
+      <p>
+        Parece que no tienes acceso a internet. Revisa tu conexión y vuelve a abrir la app para
+        continuar utilizando el registro financiero.
+      </p>
+    </div>
+  </body>
+</html>

@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
 2. registrar_ingreso - Para registrar un ingreso
 
 📋 CATEGORÍAS VÁLIDAS:
-**Gastos:** Alimentación, Transporte, Vivienda, Salud, Entretenimiento, Educación, Otros Gastos
-**Ingresos:** Salario, Ventas, Servicios, Inversiones, Otros Ingresos
+**Gastos:** Alimentación, Transporte, Vivienda, Salud, Entretenimiento, Educación, Ahorro/inversión, Otros gastos
+**Ingresos:** Salario, Ventas, Servicios, Inversiones, Otros ingresos
 
 👥 El usuario puede especificar quién registra la transacción (opcional)
 
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
                   },
                   categoria: {
                     type: 'string',
-                    enum: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Entretenimiento', 'Educación', 'Otros Gastos'],
+                    enum: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Entretenimiento', 'Educación', 'Ahorro/inversión', 'Otros gastos'],
                     description: 'Categoría del gasto'
                   },
                   descripcion: {
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
                   },
                   categoria: {
                     type: 'string',
-                    enum: ['Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros Ingresos'],
+                    enum: ['Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros ingresos'],
                     description: 'Categoría del ingreso'
                   },
                   descripcion: {

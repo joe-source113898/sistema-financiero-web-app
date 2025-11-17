@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { getCookieStore } from '@/lib/getCookieStore'
 
 // GET: Obtener todos los gastos recurrentes
 export async function GET() {
+  const cookieStore = await getCookieStore()
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+  if (userError || !user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  }
   const { data, error } = await supabase
     .from('gastos_mensuales')
     .select('*')
@@ -26,7 +31,7 @@ export async function GET() {
     activo: gasto.activo,
     categoria: 'Suscripciones', // Valor por defecto
     metodo_pago: 'Tarjeta', // Valor por defecto
-    cuenta: null,
+    cuenta: gasto.cuenta || null,
     ultima_ejecucion: null,
     created_at: gasto.created_at,
     updated_at: gasto.updated_at
@@ -37,6 +42,15 @@ export async function GET() {
 
 // POST: Crear nuevo gasto recurrente
 export async function POST(request: Request) {
+  const cookieStore = await getCookieStore()
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+  if (userError || !user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  }
   const body = await request.json()
 
   const { data, error } = await supabase
@@ -46,6 +60,7 @@ export async function POST(request: Request) {
       dia_de_cobro: body.dia_cobro,
       monto: body.monto,
       activo: body.activo ?? true,
+      cuenta: body.cuenta || null,
     })
     .select()
 
@@ -62,7 +77,7 @@ export async function POST(request: Request) {
     activo: gasto.activo,
     categoria: 'Suscripciones',
     metodo_pago: 'Tarjeta',
-    cuenta: null,
+    cuenta: gasto.cuenta || null,
     ultima_ejecucion: null,
     created_at: gasto.created_at,
     updated_at: gasto.updated_at
@@ -73,6 +88,15 @@ export async function POST(request: Request) {
 
 // PUT: Actualizar gasto recurrente
 export async function PUT(request: Request) {
+  const cookieStore = await getCookieStore()
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+  if (userError || !user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  }
   const body = await request.json()
 
   if (!body.id) {
@@ -86,6 +110,7 @@ export async function PUT(request: Request) {
       dia_de_cobro: body.dia_cobro,
       monto: body.monto,
       activo: body.activo,
+      cuenta: body.cuenta || null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', body.id)
@@ -115,6 +140,15 @@ export async function PUT(request: Request) {
 
 // DELETE: Eliminar gasto recurrente
 export async function DELETE(request: Request) {
+  const cookieStore = await getCookieStore()
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+  if (userError || !user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  }
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
 

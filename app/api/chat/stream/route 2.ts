@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
             content: `Eres un asistente financiero para Zazil Tunich. Registras gastos e ingresos de forma conversacional.
 
 📋 CATEGORÍAS VÁLIDAS:
-**Gastos:** Nómina, Mantenimiento, Compras, Gasolina, Comisiones, Publicidad, Servicios, Otros Gastos
-**Ingresos:** Tours, Comedor, Reservaciones, Anticipos, Otros Ingresos
+**Gastos:** Nómina, Mantenimiento, Compras, Gasolina, Comisiones, Publicidad, Servicios, Ahorro/inversión, Otros gastos
+**Ingresos:** Tours, Comedor, Reservaciones, Anticipos, Otros ingresos
 
 👥 USUARIOS: Armando, Esposa, Hijo 1, Hijo 2, Hijo 3
 💳 MÉTODOS: Efectivo, Tarjeta, Transferencia
@@ -69,7 +69,7 @@ Sé amigable y confirma con resumen detallado.`
                       monto: { type: 'number' },
                       categoria: {
                         type: 'string',
-                        enum: ['Nómina', 'Mantenimiento', 'Compras', 'Gasolina', 'Comisiones', 'Publicidad', 'Servicios', 'Otros Gastos']
+                        enum: ['Nómina', 'Mantenimiento', 'Compras', 'Gasolina', 'Comisiones', 'Publicidad', 'Servicios', 'Ahorro/inversión', 'Otros gastos']
                       },
                       descripcion: { type: 'string' },
                       metodo_pago: {
@@ -98,7 +98,7 @@ Sé amigable y confirma con resumen detallado.`
                       monto: { type: 'number' },
                       categoria: {
                         type: 'string',
-                        enum: ['Tours', 'Comedor', 'Reservaciones', 'Anticipos', 'Otros Ingresos']
+                        enum: ['Tours', 'Comedor', 'Reservaciones', 'Anticipos', 'Otros ingresos']
                       },
                       descripcion: { type: 'string' },
                       metodo_pago: {

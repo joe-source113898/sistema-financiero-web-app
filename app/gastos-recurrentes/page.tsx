@@ -5,7 +5,7 @@ import { Loader2, CheckCircle2, XCircle, Plus, Trash2, Edit, Calendar, DollarSig
 
 const CATEGORIAS = [
   'Alimentación', 'Transporte', 'Vivienda', 'Salud',
-  'Entretenimiento', 'Educación', 'Otros Gastos', 'Suscripciones'
+  'Entretenimiento', 'Educación', 'Ahorro/inversión', 'Otros gastos', 'Suscripciones'
 ]
 
 const METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Transferencia']
@@ -180,7 +180,7 @@ export default function GastosRecurrentesPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-2">
-          Gastos Recurrentes
+          Gastos recurrentes
         </h1>
         <p className="text-gray-600 dark:text-gray-400 text-sm">
           Administra tus suscripciones y pagos automáticos
@@ -191,7 +191,7 @@ export default function GastosRecurrentesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Total Activos</span>
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Total activos</span>
             <DollarSign className="w-5 h-5 text-emerald-500" />
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -202,7 +202,7 @@ export default function GastosRecurrentesPage() {
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Gastos Activos</span>
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Gastos activos</span>
             <CheckCircle2 className="w-5 h-5 text-green-500" />
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -213,11 +213,17 @@ export default function GastosRecurrentesPage() {
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Próximo Cobro</span>
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Próximo cobro</span>
             <Calendar className="w-5 h-5 text-blue-500" />
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            Día {Math.min(...gastos.filter(g => g.activo && g.dia_cobro >= new Date().getDate()).map(g => g.dia_cobro), 31)}
+            {(() => {
+              const hoy = new Date().getDate()
+              const diasActivos = gastos.filter(g => g.activo).map(g => g.dia_cobro).sort((a, b) => a - b)
+              if (diasActivos.length === 0) return '-'
+              const proximo = diasActivos.find(dia => dia >= hoy) ?? diasActivos[0]
+              return `Día ${proximo}`
+            })()}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Este mes</p>
         </div>
@@ -230,7 +236,7 @@ export default function GastosRecurrentesPage() {
           className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-cyan-600 transition-all shadow-lg"
         >
           <Plus className="w-5 h-5" />
-          {showForm ? 'Cancelar' : 'Añadir Gasto Recurrente'}
+          {showForm ? 'Cancelar' : 'Añadir gasto recurrente'}
         </button>
       </div>
 
@@ -238,7 +244,7 @@ export default function GastosRecurrentesPage() {
       {showForm && (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
           <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">
-            {editingId ? 'Editar Gasto Recurrente' : 'Nuevo Gasto Recurrente'}
+            {editingId ? 'Editar gasto recurrente' : 'Nuevo gasto recurrente'}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -259,7 +265,7 @@ export default function GastosRecurrentesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Día de Cobro (1-31) *
+                  Día de cobro (1-31) *
                 </label>
                 <input
                   type="number"
@@ -304,7 +310,7 @@ export default function GastosRecurrentesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Método de Pago
+                  Método de pago
                 </label>
                 <select
                   value={metodo_pago}
@@ -370,7 +376,7 @@ export default function GastosRecurrentesPage() {
                     Guardando...
                   </>
                 ) : (
-                  <>{editingId ? 'Actualizar' : 'Crear'} Gasto</>
+                  <>{editingId ? 'Actualizar' : 'Crear'} gasto</>
                 )}
               </button>
 
@@ -398,7 +404,7 @@ export default function GastosRecurrentesPage() {
                   Nombre
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Día Cobro
+                  Día de cobro
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Monto

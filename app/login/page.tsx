@@ -1,30 +1,53 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-gray-200">
+          Cargando formulario...
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  )
+}
+
+function LoginForm() {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const supabase = createClientComponentClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
+    setLoading(true)
 
-    const res = await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     })
 
-    if (res.ok) {
-      router.push('/')
-      router.refresh()
-    } else {
-      setError('Contraseña incorrecta')
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
     }
+
+    const redirectTo = searchParams.get('redirectTo') || '/'
+    router.push(redirectTo)
+    router.refresh()
   }
 
   return (
@@ -35,17 +58,30 @@ export default function LoginPage() {
             <span className="text-2xl">🏛️</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 tracking-tight">
-            Sistema Financiero
+            Sistema financiero
           </h1>
           <p className="text-gray-400 text-center text-sm sm:text-base">
-            Dashboard Financiero Empresarial
+            Dashboard financiero empresarial
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+              Correo electrónico
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tucorreo@example.com"
+              className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base outline-none mb-4"
+              autoFocus
+              required
+            />
             <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-              Contraseña de Acceso
+              Contraseña de acceso
             </label>
             <div className="relative">
               <input
@@ -55,7 +91,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Ingresa tu contraseña"
                 className="w-full p-4 pr-12 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-base outline-none"
-                autoFocus
+                required
               />
               <button
                 type="button"
@@ -79,9 +115,10 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-4 rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all font-semibold shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transform hover:scale-[1.02]"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-4 rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all font-semibold shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transform hover:scale-[1.02] disabled:opacity-60"
           >
-            Ingresar al Dashboard
+            {loading ? 'Ingresando...' : 'Ingresar al dashboard'}
           </button>
         </form>
 

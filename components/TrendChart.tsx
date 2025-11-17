@@ -12,7 +12,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
-import { supabase } from '@/lib/supabase'
+import { useSupabaseClient, useSession } from '@supabase/auth-helpers-react'
 
 ChartJS.register(
   CategoryScale,
@@ -35,6 +35,8 @@ interface TrendChartProps {
 export function TrendChart({ vista = 'mensual', fechaInicio, fechaFin }: TrendChartProps = {}) {
   const [chartData, setChartData] = useState<any>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const supabase = useSupabaseClient()
+  const session = useSession()
 
   useEffect(() => {
     // Detect if mobile on client side only
@@ -45,8 +47,9 @@ export function TrendChart({ vista = 'mensual', fechaInicio, fechaFin }: TrendCh
   }, [])
 
   useEffect(() => {
+    if (!session) return
     fetchTrendData()
-  }, [vista, fechaInicio, fechaFin])
+  }, [vista, fechaInicio, fechaFin, session])
 
   const fetchTrendData = async () => {
     let startDate: Date
@@ -84,6 +87,7 @@ export function TrendChart({ vista = 'mensual', fechaInicio, fechaFin }: TrendCh
       .select('*')
       .gte('fecha', startDate.toISOString())
       .lte('fecha', endDate.toISOString())
+      .eq('usuario_id', session?.user.id)
       .order('fecha', { ascending: true })
 
     if (data && data.length > 0) {

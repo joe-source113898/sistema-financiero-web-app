@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useSupabaseClient, useSession } from '@supabase/auth-helpers-react'
 import { DollarSign, Calendar, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface IngresoItem {
@@ -15,10 +15,12 @@ const CATEGORIAS_INGRESO = [
   { nombre: 'Comedor', icon: '🍽️' },
   { nombre: 'Reservaciones', icon: '📅' },
   { nombre: 'Anticipos', icon: '💳' },
-  { nombre: 'Otros Ingresos', icon: '💰' },
+  { nombre: 'Otros ingresos', icon: '💰' },
 ]
 
 export default function CorteDiarioPage() {
+  const supabase = useSupabaseClient()
+  const session = useSession()
   const [ingresos, setIngresos] = useState<IngresoItem[]>(
     CATEGORIAS_INGRESO.map(cat => ({
       categoria: cat.nombre,
@@ -46,6 +48,10 @@ export default function CorteDiarioPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!session) {
+      setMensaje({ tipo: 'error', texto: 'Debes iniciar sesión' })
+      return
+    }
     setLoading(true)
     setMensaje(null)
 
@@ -67,13 +73,11 @@ export default function CorteDiarioPage() {
         descripcion: `Corte diario - ${item.cantidad} unidad(es)`,
         metodo_pago: 'Efectivo',
         registrado_por: registradoPor,
-        fecha_hora: new Date().toISOString(),
+        fecha: new Date().toISOString(),
+        usuario_id: session.user.id,
       }))
 
-      // Insertar en Supabase
-      const { error } = await supabase
-        .from('transacciones')
-        .insert(transacciones)
+      const { error } = await supabase.from('transacciones').insert(transacciones)
 
       if (error) throw error
 
@@ -96,6 +100,22 @@ export default function CorteDiarioPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (session === null) {
+    return (
+      <main className="p-8 text-center text-gray-600">
+        Redirigiendo al inicio de sesión...
+      </main>
+    )
+  }
+
+  if (!session) {
+    return (
+      <main className="p-8 text-center text-gray-600">
+        Cargando sesión...
+      </main>
+    )
   }
 
   return (
