@@ -62,6 +62,14 @@ body {
   font-family: var(--font-geist-sans), sans-serif;
 }
 
+body.login-view {
+  background: linear-gradient(160deg, #050911, #0f1a2d);
+}
+
+body.login-view header {
+  display: none;
+}
+
 /* Animaciones personalizadas */
 @keyframes fade-in {
   from {
