@@ -60,9 +60,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SupabaseProvider>
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+            <div className="app-shell min-h-svh bg-[var(--app-bg)] text-[var(--foreground)] transition-colors">
               <Header />
-              {children}
+              <main className="app-content">{children}</main>
             </div>
           </SupabaseProvider>
         </ThemeProvider>

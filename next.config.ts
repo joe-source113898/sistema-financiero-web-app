@@ -1,5 +1,7 @@
 import type { NextConfig } from 'next'
 import nextPWA from 'next-pwa'
+import fs from 'fs'
+import path from 'path'
 
 const runtimeCaching = [
   {
@@ -46,6 +48,23 @@ const withPWA = nextPWA({
 const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.plugins = config.plugins || []
+      config.plugins.push({
+        apply(compiler: any) {
+          compiler.hooks.afterEmit.tap('EnsurePagesManifest', () => {
+            const manifestPath = path.join(compiler.outputPath, 'server', 'pages-manifest.json')
+            if (!fs.existsSync(manifestPath)) {
+              fs.mkdirSync(path.dirname(manifestPath), { recursive: true })
+              fs.writeFileSync(manifestPath, '{}')
+            }
+          })
+        },
+      })
+    }
+    return config
   },
 }
 

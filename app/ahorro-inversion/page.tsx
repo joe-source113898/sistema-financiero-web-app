@@ -310,7 +310,7 @@ export default function AhorroInversionPage() {
   }
 
   return (
-    <main className="p-4 sm:p-6 md:p-8 max-w-6xl mx-auto space-y-10">
+    <main className="max-w-6xl mx-auto px-4 space-y-10">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-500 to-cyan-400 bg-clip-text text-transparent">

@@ -107,12 +107,17 @@ export default function RegistroPage() {
   }
 
   return (
-    <main className="p-4 sm:p-6 md:p-8 max-w-3xl mx-auto">
-      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
-        Registrar transacción
-      </h2>
+    <main className="max-w-3xl mx-auto px-4 space-y-4">
+      <section className="panel space-y-2">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          Registrar transacción
+        </h2>
+        <p className="text-sm text-gray-500">
+          Completa los campos y registra tus movimientos al instante, adaptado para pantallas móviles.
+        </p>
+      </section>
 
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="panel space-y-6">
         {/* Tipo de transacción */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

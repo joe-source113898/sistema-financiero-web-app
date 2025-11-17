@@ -9,9 +9,9 @@ interface KPICardProps {
 
 export function KPICard({ title, value, icon, color }: KPICardProps) {
   const colorClasses = {
-    green: 'border-emerald-200/80 dark:border-emerald-400/60',
-    red: 'border-rose-200/80 dark:border-rose-400/60',
-    blue: 'border-cyan-200/80 dark:border-cyan-400/60',
+    green: 'from-emerald-50 to-white dark:from-emerald-500/10 dark:to-transparent text-emerald-600',
+    red: 'from-rose-50 to-white dark:from-rose-500/10 dark:to-transparent text-rose-600',
+    blue: 'from-cyan-50 to-white dark:from-cyan-500/10 dark:to-transparent text-cyan-500',
   }
 
   const iconComponents = {
@@ -30,26 +30,19 @@ export function KPICard({ title, value, icon, color }: KPICardProps) {
 
   return (
     <div
-      className={`
-        relative overflow-hidden
-        p-6 rounded-3xl border
-        bg-[var(--card-bg)]
-        ${colorClasses[color]}
-        shadow-xl shadow-black/5 dark:shadow-black/40
-        transition-all duration-300 ease-out
-        group cursor-default
-      `}
+      className="kpi-card relative overflow-hidden p-5 rounded-[var(--app-radius)] bg-white dark:bg-[#0c101d] border border-white/40 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/40 transition-all duration-300 hover:-translate-y-0.5"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-transparent to-white/20 dark:from-white/10 dark:via-transparent dark:to-white/8 backdrop-blur-xl -z-10" />
+      <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses[color]} opacity-80 pointer-events-none`} />
+      <div className="absolute inset-0 backdrop-blur-[1px] border border-white/40 dark:border-white/5 rounded-[var(--app-radius)] pointer-events-none" />
 
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-semibold opacity-80 tracking-wide uppercase">{title}</p>
-        <div className="p-2 rounded-2xl bg-[var(--accent-soft)]/50 text-[var(--accent)] group-hover:scale-110 transition-transform duration-300">
-          <Icon className="w-6 h-6" />
+      <div className="relative flex items-center justify-between mb-4">
+        <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 tracking-wide">{title}</p>
+        <div className="p-2 rounded-full bg-white/70 dark:bg-white/10 text-[var(--foreground)] shadow">
+          <Icon className="w-5 h-5" />
         </div>
       </div>
 
-      <p className="text-3xl sm:text-4xl font-bold break-all text-[var(--foreground)]">
+      <p className="relative text-3xl sm:text-4xl font-bold break-all text-gray-900 dark:text-white">
         {displayValue}
       </p>
     </div>

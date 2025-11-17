@@ -16,6 +16,8 @@
   --accent-soft: #d0f5f0;
   --muted: #64748b;
   --muted-bg: #f1f5f9;
+  --app-bg: #f4f6fb;
+  --app-radius: 24px;
 }
 
 /* Dark mode - system preference */
@@ -42,6 +44,7 @@
   --accent-soft: #0b4a45;
   --muted: #d1dcff;
   --muted-bg: #121a2e;
+  --app-bg: #050915;
 }
 
 /* Light mode - manual override */
@@ -68,6 +71,53 @@ body.login-view {
 
 body.login-view header {
   display: none;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--app-bg);
+}
+
+.app-content {
+  padding-top: calc(1rem + env(safe-area-inset-top));
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--app-radius);
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.dark .panel {
+  background: rgba(11, 15, 28, 0.95);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --app-radius: 18px;
+  }
+
+  .app-content {
+    padding: calc(1rem + env(safe-area-inset-top)) 1rem calc(6rem + env(safe-area-inset-bottom));
+  }
+
+  section,
+  .card {
+    border-radius: var(--app-radius);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 25px 50px rgba(15, 23, 42, 0.08);
+  }
+
+  .dark section,
+  .dark .card {
+    background: rgba(9, 12, 23, 0.9);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+  }
 }
 
 /* Animaciones personalizadas */
