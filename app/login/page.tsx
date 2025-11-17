@@ -40,7 +40,7 @@ function LoginForm() {
     () => ({
       paddingTop: 'calc(2rem + env(safe-area-inset-top))',
       paddingBottom: 'calc(2rem + env(safe-area-inset-bottom))',
-      background: 'linear-gradient(160deg, #050911, #101933)',
+      background: 'linear-gradient(160deg, #e6f0ff, #c0d4ff)',
     }),
     []
   )
@@ -69,23 +69,23 @@ function LoginForm() {
   return (
     <main className="min-h-svh flex items-center justify-center" style={safeAreaStyle}>
       <section className="w-full max-w-md mx-auto px-4">
-        <div className="bg-white/95 dark:bg-gray-900/95 border border-white/60 dark:border-gray-800 rounded-3xl shadow-2xl backdrop-blur-lg p-6 sm:p-8 space-y-8">
+        <div className="bg-white border border-white/60 rounded-3xl shadow-2xl shadow-sky-200/60 p-6 sm:p-8 space-y-8">
           <div className="text-center space-y-3">
             <div className="w-14 h-14 mx-auto rounded-full bg-[var(--accent-soft)] flex items-center justify-center text-2xl shadow">
               🏛️
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl font-bold text-gray-900">
                 Sistema financiero
               </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Dashboard financiero empresarial</p>
+              <p className="text-sm text-gray-500">Dashboard financiero empresarial</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-2">
                   Correo electrónico
                 </label>
                 <input
@@ -94,14 +94,14 @@ function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tucorreo@example.com"
-                  className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-transparent px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
                   autoFocus
                   required
                   autoComplete="email"
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-600 mb-2">
                   Contraseña de acceso
                 </label>
                 <div className="relative">
@@ -111,14 +111,14 @@ function LoginForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Ingresa tu contraseña"
-                    className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-transparent px-4 py-3 pr-12 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
+                    className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 pr-12 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
                     required
                     autoComplete="current-password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
                     aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -128,7 +128,7 @@ function LoginForm() {
             </div>
 
             {error && (
-              <div className="rounded-2xl bg-red-50/80 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-600 dark:text-red-300 text-center">
+              <div className="rounded-2xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600 text-center">
                 {error}
               </div>
             )}
@@ -142,7 +142,7 @@ function LoginForm() {
             </button>
           </form>
 
-          <p className="text-center text-xs text-gray-400">Sistema protegido © 2025</p>
+          <p className="text-center text-xs text-gray-500">Sistema protegido © 2025</p>
         </div>
       </section>
     </main>

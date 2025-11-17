@@ -63,7 +63,7 @@ body {
 }
 
 body.login-view {
-  background: linear-gradient(160deg, #050911, #0f1a2d);
+  background: linear-gradient(160deg, #d8e7ff, #b9ccff);
 }
 
 body.login-view header {
