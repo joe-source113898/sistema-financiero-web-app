@@ -78,7 +78,9 @@
 }
 
 body {
-  background: var(--bg-page);
+  min-height: 100vh;
+  background: radial-gradient(circle at left top, rgba(138, 122, 255, 0.25), transparent 45%),
+    linear-gradient(180deg, #f0f3ff 0%, #f8f9fd 40%, var(--bg-page) 100%);
   color: var(--text-main);
   font-family: var(--font-geist-sans), sans-serif;
 }
@@ -93,7 +95,18 @@ body.login-view header {
 
 .app-shell {
   min-height: 100vh;
-  background: var(--bg-page);
+  background: transparent;
+  position: relative;
+}
+
+.app-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at 5% 15%, rgba(150, 134, 255, 0.2), transparent 40%),
+    radial-gradient(circle at 90% 0%, rgba(255, 177, 153, 0.2), transparent 50%),
+    var(--bg-page);
 }
 
 .app-content {

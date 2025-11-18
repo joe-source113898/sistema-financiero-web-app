@@ -105,7 +105,7 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[var(--card-border)] bg-[var(--card-bg)]">
+      <header className="sticky top-0 z-40 border-b border-[var(--card-border)] bg-[var(--bg-navbar)]/90 backdrop-blur-xl shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
