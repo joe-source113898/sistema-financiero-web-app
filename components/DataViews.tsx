@@ -324,7 +324,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
       {/* Resumen de Totales */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-br from-emerald-100/70 via-white to-white dark:from-emerald-900/30 dark:via-[#0f1220] dark:to-[#090c16] p-6 rounded-2xl border border-emerald-300/60 dark:border-emerald-800">
+        <div className="bg-white dark:bg-[#1b2239] p-6 rounded-2xl border border-[var(--card-border)] dark:border-[var(--card-border)]">
           <div className="text-sm text-emerald-700 dark:text-emerald-200 mb-1">Total de ingresos</div>
           <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
             ${totales.ingresos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
