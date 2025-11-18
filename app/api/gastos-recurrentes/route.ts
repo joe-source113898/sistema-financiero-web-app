@@ -4,7 +4,7 @@ import { getCookieStore } from '@/lib/getCookieStore'
 
 // GET: Obtener todos los gastos recurrentes
 export async function GET() {
-  const cookieStore = await getCookieStore()
+  const cookieStore = getCookieStore()
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
   const {
     data: { user },
@@ -42,7 +42,7 @@ export async function GET() {
 
 // POST: Crear nuevo gasto recurrente
 export async function POST(request: Request) {
-  const cookieStore = await getCookieStore()
+  const cookieStore = getCookieStore()
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
   const {
     data: { user },
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
 
 // PUT: Actualizar gasto recurrente
 export async function PUT(request: Request) {
-  const cookieStore = await getCookieStore()
+  const cookieStore = getCookieStore()
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
   const {
     data: { user },
@@ -140,7 +140,7 @@ export async function PUT(request: Request) {
 
 // DELETE: Eliminar gasto recurrente
 export async function DELETE(request: Request) {
-  const cookieStore = await getCookieStore()
+  const cookieStore = getCookieStore()
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
   const {
     data: { user },

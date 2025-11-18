@@ -6,8 +6,12 @@ import { getCookieStore } from '@/lib/getCookieStore'
  * Procesa gastos recurrentes automáticamente
  * Verifica si hay gastos programados para hoy que no se hayan registrado
  */
+export async function GET() {
+  return NextResponse.json({ status: 'ready' })
+}
+
 export async function POST() {
-  const cookieStore = await getCookieStore()
+  const cookieStore = getCookieStore()
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
   const {
     data: { user },

@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
 
-export async function getCookieStore() {
+export function getCookieStore() {
   return cookies()
 }
