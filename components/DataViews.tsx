@@ -29,6 +29,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
   const [fechaInicio, setFechaInicio] = useState(fechaInicioProp || '')
   const [fechaFin, setFechaFin] = useState(fechaFinProp || '')
   const [showDatePicker, setShowDatePicker] = useState(false)
+  const [timeZone, setTimeZone] = useState('America/Mexico_City')
 
   // Estados para filtros y sorting
   const [filtroTipo, setFiltroTipo] = useState<'todos' | 'gasto' | 'ingreso'>('todos')
@@ -54,6 +55,30 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
   useEffect(() => {
     fetchData()
   }, [vista, fechaInicio, fechaFin])
+
+  useEffect(() => {
+    try {
+      const detected = Intl.DateTimeFormat().resolvedOptions().timeZone
+      if (detected) setTimeZone(detected)
+    } catch (error) {
+      setTimeZone('America/Mexico_City')
+    }
+  }, [])
+
+  const getZonedDate = (value: string) => {
+    const date = new Date(value)
+    return new Date(date.toLocaleString('en-US', { timeZone }))
+  }
+
+  const formatDate = (value: string, options?: Intl.DateTimeFormatOptions) => {
+    const date = new Date(value)
+    return new Intl.DateTimeFormat('es-MX', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone,
+      ...(options || {}),
+    }).format(date)
+  }
 
   const fetchData = async () => {
     setLoading(true)
@@ -158,20 +183,30 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
     const grupos: { [key: string]: Transaccion[] } = {}
 
     transaccionesPaginadas.forEach((t) => {
-      const fecha = new Date(t.fecha)
+      const fecha = getZonedDate(t.fecha)
       let key = ''
 
       if (vista === 'diaria') {
-        key = fecha.toLocaleDateString('es-MX', {
+        key = new Intl.DateTimeFormat('es-MX', {
           year: 'numeric',
           month: '2-digit',
-          day: '2-digit'
-        })
+          day: '2-digit',
+          timeZone,
+        }).format(fecha)
       } else if (vista === 'semanal') {
         const weekNum = Math.ceil((fecha.getDate()) / 7)
-        key = `${fecha.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })} - Semana ${weekNum}`
+        const label = new Intl.DateTimeFormat('es-MX', {
+          month: 'long',
+          year: 'numeric',
+          timeZone,
+        }).format(fecha)
+        key = `${label} - Semana ${weekNum}`
       } else {
-        key = fecha.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })
+        key = new Intl.DateTimeFormat('es-MX', {
+          month: 'long',
+          year: 'numeric',
+          timeZone,
+        }).format(fecha)
       }
 
       if (!grupos[key]) grupos[key] = []
@@ -449,7 +484,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                         : 'bg-red-200/95 dark:bg-red-800/50 hover:bg-red-300 dark:hover:bg-red-700/60'
                     }`}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                        {new Date(tx.fecha).toLocaleString('es-MX', {
+                        {formatDate(tx.fecha, {
                           day: '2-digit',
                           month: '2-digit',
                           year: 'numeric',
