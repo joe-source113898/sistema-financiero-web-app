@@ -105,7 +105,7 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-[var(--card-border)] shadow-lg bg-white/90 dark:bg-[#161a2c]/95">
+      <header className="sticky top-0 z-40 border-b border-[var(--card-border)] bg-[var(--card-bg)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
@@ -162,9 +162,9 @@ export function Header() {
       {isMobile && session && (
         <>
           {showMobileMenu && (
-            <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setShowMobileMenu(false)}>
+            <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setShowMobileMenu(false)}>
               <div
-                className="absolute bottom-0 inset-x-0 bg-white dark:bg-[#181f33] rounded-t-3xl p-6 space-y-4"
+                className="absolute bottom-0 inset-x-0 bg-[var(--card-bg)] rounded-t-3xl p-6 space-y-4"
                 onClick={(e) => e.stopPropagation()}
               >
                 <h3 className="text-center font-semibold">Acciones rápidas</h3>
