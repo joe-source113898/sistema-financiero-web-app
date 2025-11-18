@@ -9,7 +9,7 @@ import { TrendingUp } from 'lucide-react'
 
 const TrendChart = dynamic(() => import('@/components/TrendChart').then(mod => ({ default: mod.TrendChart })), {
   ssr: false,
-  loading: () => <div className="text-center py-12 text-gray-600 dark:text-gray-400">Cargando gráfica...</div>,
+  loading: () => <div className="text-center py-12 text-[var(--text-muted)]">Cargando gráfica...</div>,
 })
 
 type Vista = 'diaria' | 'semanal' | 'mensual' | 'personalizada'
@@ -110,14 +110,14 @@ export default function HomePage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-gray-900 dark:text-white">Cargando...</div>
+        <div className="text-xl text-[var(--text-main)]">Cargando...</div>
       </div>
     )
   }
 
   if (!session) {
     return (
-      <main className="p-8 text-center text-gray-600">
+      <main className="p-8 text-center text-[var(--text-muted)]">
         Cargando sesión...
       </main>
     )
@@ -126,15 +126,15 @@ export default function HomePage() {
   return (
     <main className="max-w-6xl mx-auto space-y-6 px-4">
       <section className="panel space-y-2">
-        <p className="text-sm uppercase tracking-[0.2em] text-gray-400">Bienvenido</p>
-        <h1 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white leading-tight">
+        <p className="text-sm uppercase tracking-[0.2em] text-[var(--text-muted)]">Bienvenido</p>
+        <h1 className="text-3xl sm:text-4xl font-black text-[var(--text-main)] leading-tight">
           Dashboard financiero
         </h1>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-[var(--text-muted)]">
           Vista general de tus finanzas · {getVistaLabel()}
         </p>
         {rangoFechas.inicio && rangoFechas.fin && (
-          <p className="text-emerald-600 dark:text-emerald-400 text-sm font-semibold">
+          <p className="text-[var(--accent)] text-sm font-semibold">
             📊 Del {rangoFechas.inicio} al {rangoFechas.fin}
           </p>
         )}
@@ -146,7 +146,7 @@ export default function HomePage() {
               className={`px-4 py-2 rounded-full text-sm font-semibold border transition ${
                 vista === tipo
                   ? 'bg-[var(--accent)] text-white border-transparent shadow'
-                  : 'text-gray-500 border-gray-200 dark:border-gray-700 hover:text-gray-900 dark:hover:text-white'
+                  : 'text-[var(--text-muted)] border-[var(--border-soft)] hover:text-[var(--text-main)]'
               }`}
             >
               {tipo === 'diaria' && 'Diaria'}
@@ -162,13 +162,13 @@ export default function HomePage() {
               type="date"
               value={fechaInicio}
               onChange={(e) => setFechaInicio(e.target.value)}
-              className="rounded-2xl border border-gray-200 dark:border-gray-700 p-3 bg-white dark:bg-gray-900 text-sm"
+              className="rounded-2xl border border-[var(--border-soft)] p-3 bg-[var(--card-bg)] text-sm text-[var(--text-main)]"
             />
             <input
               type="date"
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
-              className="rounded-2xl border border-gray-200 dark:border-gray-700 p-3 bg-white dark:bg-gray-900 text-sm"
+              className="rounded-2xl border border-[var(--border-soft)] p-3 bg-[var(--card-bg)] text-sm text-[var(--text-main)]"
             />
             <button
               onClick={aplicarFechasPersonalizadas}
@@ -189,11 +189,11 @@ export default function HomePage() {
 
       <section className="panel space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-white">
-            <TrendingUp className="w-5 h-5 text-emerald-500" />
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-[var(--text-main)]">
+            <TrendingUp className="w-5 h-5 text-[var(--accent)]" />
             Tendencia de los últimos días
           </h3>
-          <span className="text-sm text-gray-500">{kpis.transacciones} transacciones analizadas</span>
+          <span className="text-sm text-[var(--text-muted)]">{kpis.transacciones} transacciones analizadas</span>
         </div>
         <div className="min-h-[280px]">
           <TrendChart vista={vista} />

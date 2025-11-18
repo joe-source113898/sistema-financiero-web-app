@@ -40,7 +40,7 @@ export function ResetDataButton() {
     <button
       onClick={handleReset}
       disabled={loading}
-      className="flex items-center gap-2 px-3 py-2 rounded-full text-sm font-semibold text-rose-600 dark:text-rose-200 border border-rose-200 dark:border-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition-colors disabled:opacity-50"
+      className="flex items-center gap-2 px-3 py-2 rounded-full text-sm font-semibold text-[var(--danger)] border border-[var(--danger)]/40 hover:bg-[var(--danger)]/10 transition-colors disabled:opacity-50"
     >
       <Trash2 className="w-4 h-4" />
       {loading ? 'Reseteando...' : 'Resetear datos'}

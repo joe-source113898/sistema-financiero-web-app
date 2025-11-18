@@ -13,21 +13,19 @@ export function ThemeToggle() {
   }, [])
 
   if (!mounted) {
-    return (
-      <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"></div>
-    )
+    return <div className="w-10 h-10 bg-[var(--surface-muted)] rounded-lg animate-pulse" />
   }
 
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="w-10 h-10 flex items-center justify-center bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+      className="w-10 h-10 flex items-center justify-center bg-[var(--surface-muted)] hover:opacity-80 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
       aria-label="Toggle theme"
     >
       {theme === 'dark' ? (
-        <Sun className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        <Sun className="w-5 h-5 text-[var(--text-main)]" />
       ) : (
-        <Moon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        <Moon className="w-5 h-5 text-[var(--text-main)]" />
       )}
     </button>
   )

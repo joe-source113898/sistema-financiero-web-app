@@ -226,7 +226,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
             📊 Vistas de datos
           </h3>
-          <div className="flex gap-2 bg-white dark:bg-gray-900 p-1 rounded-full flex-wrap border border-[var(--card-border)]">
+          <div className="flex gap-2 bg-[var(--card-bg)] p-1 rounded-full flex-wrap border border-[var(--card-border)]">
           <button
             onClick={() => setVista('diaria')}
             className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
@@ -359,25 +359,25 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
       {/* Resumen de Totales */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-[#ffffff] p-6 rounded-2xl border border-[var(--card-border)] shadow-[0_20px_40px_rgba(18,21,38,0.05)]">
-          <div className="text-sm text-[#147d4d] mb-1">Total de ingresos</div>
-          <div className="text-2xl font-bold text-[#111111]">
+        <div className="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--card-border)] shadow-soft">
+          <div className="text-sm text-[var(--success)] mb-1">Total de ingresos</div>
+          <div className="text-2xl font-bold text-[var(--text-main)]">
             ${totales.ingresos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </div>
         </div>
 
-        <div className="bg-[#ffffff] p-6 rounded-2xl border border-[var(--card-border)] shadow-[0_20px_40px_rgba(18,21,38,0.05)]">
-          <div className="text-sm text-[#b11d33] mb-1">Total de gastos</div>
-          <div className="text-2xl font-bold text-[#111111]">
+        <div className="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--card-border)] shadow-soft">
+          <div className="text-sm text-[var(--danger)] mb-1">Total de gastos</div>
+          <div className="text-2xl font-bold text-[var(--text-main)]">
             ${totales.gastos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </div>
         </div>
 
-        <div className="bg-[#ffffff] p-6 rounded-2xl border border-[var(--card-border)] shadow-[0_20px_40px_rgba(18,21,38,0.05)]">
-          <div className="text-sm mb-1 text-[#1d4f91]">
+        <div className="bg-[var(--card-bg)] p-6 rounded-2xl border border-[var(--card-border)] shadow-soft">
+          <div className="text-sm mb-1 text-[var(--accent)]">
             Balance neto
           </div>
-          <div className={`text-2xl font-bold ${balance >= 0 ? 'text-[#111111]' : 'text-[#222222]'}`}>
+          <div className="text-2xl font-bold text-[var(--text-main)]">
             ${balance.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </div>
         </div>
@@ -418,7 +418,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                   <tr>
                     <th
                       onClick={() => toggleSort('fecha')}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      className="px-6 py-3 text-left text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider cursor-pointer"
                     >
                       <div className="flex items-center gap-1">
                         Fecha/Hora
@@ -429,7 +429,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                     </th>
                     <th
                       onClick={() => toggleSort('tipo')}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      className="px-6 py-3 text-left text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider cursor-pointer"
                     >
                       <div className="flex items-center gap-1">
                         Tipo
@@ -440,7 +440,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                     </th>
                     <th
                       onClick={() => toggleSort('categoria')}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      className="px-6 py-3 text-left text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider cursor-pointer"
                     >
                       <div className="flex items-center gap-1">
                         Categoría
@@ -449,12 +449,12 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                         )}
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
                       Descripción
                     </th>
                     <th
                       onClick={() => toggleSort('metodo')}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      className="px-6 py-3 text-left text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider cursor-pointer"
                     >
                       <div className="flex items-center gap-1">
                         Método
@@ -465,7 +465,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                     </th>
                     <th
                       onClick={() => toggleSort('monto')}
-                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      className="px-6 py-3 text-right text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider cursor-pointer"
                     >
                       <div className="flex items-center justify-end gap-1">
                         Monto
@@ -476,14 +476,17 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="divide-y divide-[var(--border-soft)]">
                   {txs.map((tx) => (
-                    <tr key={tx.id} className={`transition-colors ${
-                      tx.tipo === 'ingreso'
-                        ? 'bg-green-200/95 dark:bg-green-800/50 hover:bg-green-300 dark:hover:bg-green-700/60'
-                        : 'bg-red-200/95 dark:bg-red-800/50 hover:bg-red-300 dark:hover:bg-red-700/60'
-                    }`}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                    <tr
+                      key={tx.id}
+                      className={`transition-colors ${
+                        tx.tipo === 'ingreso'
+                          ? 'bg-[var(--accent-soft)]'
+                          : 'bg-[var(--surface-muted)]'
+                      }`}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-main)]">
                         {formatDate(tx.fecha, {
                           day: '2-digit',
                           month: '2-digit',
@@ -503,13 +506,13 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                           {tx.tipo === 'ingreso' ? 'Ingreso' : 'Gasto'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                      <td className="px-6 py-4 text-sm text-[var(--text-main)]">
                         {tx.categoria}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">
+                      <td className="px-6 py-4 text-sm text-[var(--text-main)] max-w-xs truncate">
                         {tx.descripcion || '-'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 capitalize">
+                      <td className="px-6 py-4 text-sm text-[var(--text-main)] capitalize">
                         {tx.metodo_pago || '-'}
                       </td>
                       <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold text-right ${

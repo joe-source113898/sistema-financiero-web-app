@@ -55,12 +55,13 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="system"
           enableSystem
+          storageKey="sistema-financiero-theme"
           disableTransitionOnChange
         >
           <SupabaseProvider>
-            <div className="app-shell min-h-svh bg-[var(--app-bg)] text-[var(--foreground)] transition-colors">
+            <div className="app-shell min-h-svh bg-[var(--bg-page)] text-[var(--text-main)] transition-colors">
               <Header />
               <main className="app-content">{children}</main>
             </div>
