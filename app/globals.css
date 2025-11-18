@@ -97,7 +97,7 @@ body.login-view header {
 }
 
 .app-content {
-  padding-top: calc(1rem + env(safe-area-inset-top));
+  padding-top: calc(4.5rem + env(safe-area-inset-top));
   padding-bottom: calc(5rem + env(safe-area-inset-bottom));
 }
 
@@ -124,7 +124,7 @@ body.login-view header {
   }
 
   .app-content {
-    padding: calc(1rem + env(safe-area-inset-top)) 1rem calc(6rem + env(safe-area-inset-bottom));
+    padding: calc(5rem + env(safe-area-inset-top)) 1rem calc(7rem + env(safe-area-inset-bottom));
   }
 
   section,
