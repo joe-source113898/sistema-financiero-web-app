@@ -8,16 +8,16 @@
 
 /* Light mode (default) */
 :root {
-  --background: #f6f8fb;
-  --foreground: #121418;
+  --background: #fdfdff;
+  --foreground: #111322;
   --card-bg: #ffffff;
-  --card-border: #e3e8f0;
-  --accent: #0d9488;
-  --accent-soft: #d0f5f0;
-  --muted: #64748b;
-  --muted-bg: #f1f5f9;
-  --app-bg: #f4f6fb;
-  --app-radius: 24px;
+  --card-border: #e7ecff;
+  --accent: #0ea5e9;
+  --accent-soft: #d9f4ff;
+  --muted: #6c789a;
+  --muted-bg: #f2f5ff;
+  --app-bg: linear-gradient(180deg, #fafdff 0%, #eef3ff 60%, #ffffff 100%);
+  --app-radius: 26px;
 }
 
 /* Dark mode - system preference */
@@ -36,15 +36,15 @@
 
 /* Dark mode - manual toggle via next-themes */
 .dark {
-  --background: #040712;
-  --foreground: #f8fbff;
-  --card-bg: #0f172a;
-  --card-border: #1d2844;
-  --accent: #2dd4bf;
-  --accent-soft: #0b4a45;
-  --muted: #d1dcff;
-  --muted-bg: #121a2e;
-  --app-bg: #050915;
+  --background: #101427;
+  --foreground: #f9fbff;
+  --card-bg: #1b2035;
+  --card-border: #303750;
+  --accent: #38bdf8;
+  --accent-soft: #12263d;
+  --muted: #a6b7ff;
+  --muted-bg: #151a2b;
+  --app-bg: linear-gradient(180deg, #11162b 0%, #0b1022 80%);
 }
 
 /* Light mode - manual override */
@@ -88,13 +88,13 @@ body.login-view header {
   border: 1px solid var(--card-border);
   border-radius: var(--app-radius);
   padding: 1.5rem;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 25px 60px rgba(35, 38, 60, 0.08);
 }
 
 .dark .panel {
-  background: rgba(11, 15, 28, 0.95);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  background: rgba(24, 28, 50, 0.95);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 35px 60px rgba(6, 8, 17, 0.6);
 }
 
 @media (max-width: 640px) {

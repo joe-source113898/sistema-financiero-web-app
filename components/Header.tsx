@@ -105,7 +105,7 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-[var(--card-border)] shadow-lg bg-white/90 dark:bg-[#080b13]/90">
+      <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-[var(--card-border)] shadow-lg bg-white/90 dark:bg-[#161a2c]/95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
@@ -162,9 +162,9 @@ export function Header() {
       {isMobile && session && (
         <>
           {showMobileMenu && (
-            <div className="fixed inset-0 z-40 bg-black/60" onClick={() => setShowMobileMenu(false)}>
+            <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setShowMobileMenu(false)}>
               <div
-                className="absolute bottom-0 inset-x-0 bg-white dark:bg-gray-900 rounded-t-3xl p-6 space-y-4"
+                className="absolute bottom-0 inset-x-0 bg-white dark:bg-[#181f33] rounded-t-3xl p-6 space-y-4"
                 onClick={(e) => e.stopPropagation()}
               >
                 <h3 className="text-center font-semibold">Acciones rápidas</h3>
@@ -231,7 +231,7 @@ export function Header() {
           )}
 
           <nav className="fixed bottom-4 inset-x-0 z-30 px-4">
-            <div className="mx-auto max-w-lg bg-white/95 dark:bg-gray-900/90 border border-white/70 dark:border-gray-800 rounded-3xl shadow-2xl flex justify-around py-3">
+            <div className="mx-auto max-w-lg bg-white/95 dark:bg-[#161b2e]/95 border border-white/80 dark:border-[#252b42] rounded-3xl shadow-2xl flex justify-around py-3">
               {navItems.map(({ href, label, icon: Icon }) => {
                 const isActive = pathname === href
                 return (
