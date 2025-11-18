@@ -8,10 +8,10 @@ interface KPICardProps {
 }
 
 export function KPICard({ title, value, icon, color }: KPICardProps) {
-  const colorClasses = {
-    green: 'text-emerald-600 dark:text-emerald-300',
-    red: 'text-rose-600 dark:text-rose-300',
-    blue: 'text-cyan-600 dark:text-cyan-300',
+  const colorTokens: Record<typeof color, { bg: string; text: string }> = {
+    green: { bg: 'bg-[var(--kpi-income)]', text: 'text-emerald-600' },
+    red: { bg: 'bg-[var(--kpi-expense)]', text: 'text-rose-600' },
+    blue: { bg: 'bg-[var(--kpi-balance)]', text: 'text-cyan-700' },
   }
 
   const iconComponents = {
@@ -30,7 +30,7 @@ export function KPICard({ title, value, icon, color }: KPICardProps) {
 
   return (
     <div
-      className="kpi-card relative overflow-hidden p-5 rounded-[var(--app-radius)] bg-[var(--card-bg)] border border-[var(--card-border)] transition-colors"
+      className={`kpi-card relative overflow-hidden p-5 rounded-[var(--app-radius)] border border-transparent ${colorTokens[color].bg}`}
     >
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 tracking-wide">{title}</p>
@@ -39,7 +39,7 @@ export function KPICard({ title, value, icon, color }: KPICardProps) {
         </div>
       </div>
 
-      <p className={`text-3xl sm:text-4xl font-bold break-all ${colorClasses[color]}`}>
+      <p className={`text-3xl sm:text-4xl font-bold break-all ${colorTokens[color].text}`}>
         {displayValue}
       </p>
     </div>

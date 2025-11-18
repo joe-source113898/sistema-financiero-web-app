@@ -17,7 +17,12 @@
   --muted: #6f7a8c;
   --muted-bg: #eef1f6;
   --app-bg: #f5f6fa;
-  --app-radius: 24px;
+  --app-radius: 20px;
+  --kpi-income: #e6f7ff;
+  --kpi-expense: #ffeaea;
+  --kpi-balance: #edf4ff;
+  --nav-bg: #0d1224;
+  --nav-icon: #c9d5ff;
 }
 
 /* Dark mode - system preference */

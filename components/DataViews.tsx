@@ -191,7 +191,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
             📊 Vistas de datos
           </h3>
-          <div className="flex gap-2 bg-[var(--muted-bg)] p-1 rounded-full flex-wrap border border-[var(--card-border)]">
+          <div className="flex gap-2 bg-white dark:bg-gray-900 p-1 rounded-full flex-wrap border border-[var(--card-border)]">
           <button
             onClick={() => setVista('diaria')}
             className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
