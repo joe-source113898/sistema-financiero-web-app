@@ -324,29 +324,25 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
       {/* Resumen de Totales */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-[#1b2239] p-6 rounded-2xl border border-[var(--card-border)] dark:border-[var(--card-border)]">
-          <div className="text-sm text-emerald-700 dark:text-emerald-200 mb-1">Total de ingresos</div>
-          <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
+        <div className="bg-[#ffffff] p-6 rounded-2xl border border-[var(--card-border)] shadow-[0_20px_40px_rgba(18,21,38,0.05)]">
+          <div className="text-sm text-[#147d4d] mb-1">Total de ingresos</div>
+          <div className="text-2xl font-bold text-[#111111]">
             ${totales.ingresos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-rose-100/70 via-white to-white dark:from-rose-900/30 dark:via-[#0f1220] dark:to-[#090c16] p-6 rounded-2xl border border-rose-300/60 dark:border-rose-800">
-          <div className="text-sm text-rose-700 dark:text-rose-200 mb-1">Total de gastos</div>
-          <div className="text-2xl font-bold text-rose-900 dark:text-rose-100">
+        <div className="bg-[#ffffff] p-6 rounded-2xl border border-[var(--card-border)] shadow-[0_20px_40px_rgba(18,21,38,0.05)]">
+          <div className="text-sm text-[#b11d33] mb-1">Total de gastos</div>
+          <div className="text-2xl font-bold text-[#111111]">
             ${totales.gastos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </div>
         </div>
 
-        <div className={`bg-gradient-to-br p-6 rounded-2xl border ${
-          balance >= 0
-            ? 'from-cyan-100/70 via-white to-white dark:from-cyan-900/30 dark:via-[#0f1220] dark:to-[#090c16] border-cyan-300/60 dark:border-cyan-800'
-            : 'from-amber-100/70 via-white to-white dark:from-amber-900/30 dark:via-[#0f1220] dark:to-[#090c16] border-amber-300/60 dark:border-amber-800'
-        }`}>
-          <div className={`text-sm mb-1 ${balance >= 0 ? 'text-cyan-700 dark:text-cyan-200' : 'text-amber-700 dark:text-amber-200'}`}>
+        <div className="bg-[#ffffff] p-6 rounded-2xl border border-[var(--card-border)] shadow-[0_20px_40px_rgba(18,21,38,0.05)]">
+          <div className="text-sm mb-1 text-[#1d4f91]">
             Balance neto
           </div>
-          <div className={`text-2xl font-bold ${balance >= 0 ? 'text-cyan-900 dark:text-cyan-100' : 'text-amber-900 dark:text-amber-100'}`}>
+          <div className={`text-2xl font-bold ${balance >= 0 ? 'text-[#111111]' : 'text-[#222222]'}`}>
             ${balance.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </div>
         </div>
@@ -371,11 +367,11 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
         const totalPeriodo = txs.reduce((sum, t) => sum + (t.tipo === 'ingreso' ? t.monto : -t.monto), 0)
 
         return (
-          <div key={periodo} className="bg-[var(--card-bg)] rounded-2xl shadow-xl border border-[var(--card-border)] overflow-hidden">
-            <div className="bg-gradient-to-r from-[var(--accent)] to-[#22d3ee] text-white px-6 py-4">
+          <div key={periodo} className="bg-[var(--card-bg)] rounded-2xl shadow-[0_20px_45px_rgba(15,23,42,0.06)] border border-[var(--card-border)] overflow-hidden">
+            <div className="px-6 py-4 bg-[var(--accent-soft)] border-b border-[var(--card-border)]">
               <div className="flex justify-between items-center">
-                <h4 className="text-lg font-bold">{periodo}</h4>
-                <span className={`font-bold ${totalPeriodo >= 0 ? 'text-green-100' : 'text-rose-100'}`}>
+                <h4 className="text-lg font-bold text-[#111111]">{periodo}</h4>
+                <span className={`font-bold ${totalPeriodo >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                   ${totalPeriodo.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                 </span>
               </div>

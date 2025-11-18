@@ -8,60 +8,50 @@
 
 /* Light mode (default) */
 :root {
-  --background: #f5f6fa;
-  --foreground: #101623;
+  --background: #f7f7f7;
+  --foreground: #111111;
   --card-bg: #ffffff;
-  --card-border: #dfe4ef;
-  --accent: #1f9dff;
-  --accent-soft: #e1f0ff;
-  --muted: #6f7a8c;
-  --muted-bg: #eef1f6;
-  --app-bg: #f5f6fa;
+  --card-border: #e3e5ec;
+  --accent: #0f9bff;
+  --accent-soft: #e6f2ff;
+  --muted: #5f6475;
+  --muted-bg: #f1f2f6;
+  --app-bg: #f7f7f7;
   --app-radius: 20px;
-  --kpi-income: #e6f7ff;
-  --kpi-expense: #ffeaea;
-  --kpi-balance: #edf4ff;
-  --nav-bg: #0d1224;
-  --nav-icon: #c9d5ff;
+  --kpi-income: #edf8ff;
+  --kpi-expense: #fff1f1;
+  --kpi-balance: #f1f6ff;
+  --nav-bg: #ffffff;
+  --nav-icon: #222222;
 }
 
 /* Dark mode - system preference */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --background: #040712;
-    --foreground: #f8fbff;
-    --card-bg: #0f172a;
-    --card-border: #1d2844;
-    --accent: #2dd4bf;
-    --accent-soft: #0b4a45;
-    --muted: #d1dcff;
-    --muted-bg: #121a2e;
+    --background: #f7f7f7;
+    --foreground: #111111;
+    --card-bg: #ffffff;
+    --card-border: #e3e5ec;
+    --accent: #0f9bff;
+    --accent-soft: #e6f2ff;
+    --muted: #5f6475;
+    --muted-bg: #f1f2f6;
+    --app-bg: #f7f7f7;
   }
 }
 
 /* Dark mode - manual toggle via next-themes */
-.dark {
-  --background: #121726;
-  --foreground: #f4f6fb;
-  --card-bg: #1d2133;
-  --card-border: #2b3146;
-  --accent: #58b4ff;
-  --accent-soft: #1a2538;
-  --muted: #9da5c4;
-  --muted-bg: #151927;
-  --app-bg: #111524;
-}
-
-/* Light mode - manual override */
+.dark,
 .light {
-  --background: #f6f8fb;
-  --foreground: #121418;
+  --background: #f7f7f7;
+  --foreground: #111111;
   --card-bg: #ffffff;
-  --card-border: #e3e8f0;
-  --accent: #0d9488;
-  --accent-soft: #d0f5f0;
-  --muted: #64748b;
-  --muted-bg: #f1f5f9;
+  --card-border: #e3e5ec;
+  --accent: #0f9bff;
+  --accent-soft: #e6f2ff;
+  --muted: #5f6475;
+  --muted-bg: #f1f2f6;
+  --app-bg: #f7f7f7;
 }
 
 body {
@@ -93,11 +83,13 @@ body.login-view header {
   border: 1px solid var(--card-border);
   border-radius: var(--app-radius);
   padding: 1.5rem;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
 }
 
 .dark .panel {
   background: var(--card-bg);
   border-color: var(--card-border);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
 }
 
 @media (max-width: 640px) {
@@ -112,14 +104,14 @@ body.login-view header {
   section,
   .card {
     border-radius: var(--app-radius);
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 25px 50px rgba(15, 23, 42, 0.08);
+    background: #ffffff;
+    box-shadow: 0 30px 60px rgba(18, 21, 38, 0.08);
   }
 
   .dark section,
   .dark .card {
-    background: rgba(9, 12, 23, 0.9);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+    background: #ffffff;
+    box-shadow: 0 30px 60px rgba(18, 21, 38, 0.1);
   }
 }
 

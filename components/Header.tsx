@@ -231,7 +231,7 @@ export function Header() {
           )}
 
           <nav className="fixed bottom-4 inset-x-0 z-30 px-4">
-            <div className="mx-auto max-w-lg flex justify-around py-3 rounded-3xl bg-[var(--nav-bg)] text-[var(--nav-icon)]">
+            <div className="mx-auto max-w-lg flex justify-around py-3 rounded-3xl border border-[var(--card-border)] bg-[var(--nav-bg)] text-[var(--nav-icon)] shadow-[0px_18px_35px_rgba(15,23,42,0.08)]">
               {navItems.map(({ href, label, icon: Icon }) => {
                 const isActive = pathname === href
                 return (
@@ -239,7 +239,7 @@ export function Header() {
                     key={href}
                     href={href}
                     className={`flex flex-col items-center text-xs font-semibold ${
-                      isActive ? 'text-white' : 'text-[var(--nav-icon)]/70'
+                      isActive ? 'text-[var(--accent)]' : 'text-[var(--nav-icon)]/70'
                     }`}
                   >
                     <Icon className="w-5 h-5 mb-1" />
