@@ -71,13 +71,12 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
   }
 
   const formatDate = (value: string, options?: Intl.DateTimeFormatOptions) => {
-    const date = new Date(value)
-    return new Intl.DateTimeFormat('es-MX', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-      timeZone,
-      ...(options || {}),
-    }).format(date)
+    const target = getZonedDate(value)
+    const baseOptions = options
+      ? { ...options, timeZone }
+      : { dateStyle: 'medium', timeStyle: 'short', timeZone }
+
+    return new Intl.DateTimeFormat('es-MX', baseOptions).format(target)
   }
 
   const fetchData = async () => {
@@ -554,10 +553,12 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
         <div className="flex flex-wrap items-center gap-4">
           {/* Items por página */}
           <div className="flex items-center gap-2 order-1">
-            <label className="text-sm text-[var(--muted)]">
+            <label htmlFor="itemsPorPagina" className="text-sm text-[var(--muted)]">
               Por página:
             </label>
             <select
+              id="itemsPorPagina"
+              name="itemsPorPagina"
               value={itemsPorPagina}
               onChange={(e) => {
                 setItemsPorPagina(Number(e.target.value))
