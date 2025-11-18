@@ -513,9 +513,9 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
         </div>
 
         {/* Controles de navegación */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-4">
           {/* Items por página */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 order-1">
             <label className="text-sm text-[var(--muted)]">
               Por página:
             </label>
@@ -534,8 +534,20 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
             </select>
           </div>
 
+          {/* Texto página */}
+          <span className="order-2 flex-1 text-center text-sm text-[var(--muted)]">
+            Página{' '}
+            <span className="font-semibold text-[var(--foreground)]">
+              {paginaActual}
+            </span>
+            {' '}de{' '}
+            <span className="font-semibold text-[var(--foreground)]">
+              {totalPaginas || 1}
+            </span>
+          </span>
+
           {/* Botones de navegación */}
-          <div className="flex items-center gap-2">
+          <div className="order-3 flex items-center gap-2 w-full justify-end sm:w-auto">
             <button
               onClick={() => setPaginaActual(prev => Math.max(1, prev - 1))}
               disabled={paginaActual === 1}
@@ -543,17 +555,6 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
             >
               Anterior
             </button>
-
-            <span className="px-3 py-1.5 text-sm text-[var(--muted)]">
-              Página{' '}
-              <span className="font-semibold text-[var(--foreground)]">
-                {paginaActual}
-              </span>
-              {' '}de{' '}
-              <span className="font-semibold text-[var(--foreground)]">
-                {totalPaginas || 1}
-              </span>
-            </span>
 
             <button
               onClick={() => setPaginaActual(prev => Math.min(totalPaginas, prev + 1))}
