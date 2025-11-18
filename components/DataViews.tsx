@@ -72,9 +72,14 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
   const formatDate = (value: string, options?: Intl.DateTimeFormatOptions) => {
     const target = getZonedDate(value)
-    const baseOptions = options
+    const defaultOptions = {
+      dateStyle: 'medium' as const,
+      timeStyle: 'short' as const,
+      timeZone,
+    }
+    const baseOptions: Intl.DateTimeFormatOptions = options
       ? { ...options, timeZone }
-      : { dateStyle: 'medium', timeStyle: 'short', timeZone }
+      : defaultOptions
 
     return new Intl.DateTimeFormat('es-MX', baseOptions).format(target)
   }
