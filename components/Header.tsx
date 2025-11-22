@@ -162,14 +162,19 @@ export function Header() {
       {isMobile && session && (
         <>
           {showMobileMenu && (
-            <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setShowMobileMenu(false)}>
+            <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setShowMobileMenu(false)}>
               <div
-                className="absolute bottom-0 inset-x-0 bg-[var(--card-bg)] rounded-t-3xl p-6 space-y-4"
+                className="absolute bottom-0 inset-x-0 border-t border-[var(--card-border)] bg-[var(--card-bg)]/95 backdrop-blur-2xl rounded-t-3xl shadow-[0_-12px_45px_rgba(15,23,42,0.35)] px-5 pt-5 pb-8 space-y-5"
+                style={{ paddingBottom: 'calc(2rem + env(safe-area-inset-bottom))' }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <h3 className="text-center font-semibold">Acciones rápidas</h3>
-                <div className="flex flex-col gap-3">
-                  <ResetDataButton />
+                <div className="space-y-2 text-center">
+                  <div className="mx-auto h-1.5 w-14 rounded-full bg-[var(--muted-bg)]" />
+                  <h3 className="text-base font-semibold text-[var(--foreground)]">Acciones rápidas</h3>
+                  <p className="text-sm text-[var(--muted)]">Gestiona tu información sin salir del panel</p>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <ResetDataButton variant="card" />
                   <button
                     onClick={async () => {
                       const res = await fetch('/api/export')
@@ -186,11 +191,11 @@ export function Header() {
                       window.URL.revokeObjectURL(url)
                       setShowMobileMenu(false)
                     }}
-                    className="w-full rounded-full border border-[var(--card-border)] py-3 text-sm font-semibold"
+                    className="w-full rounded-2xl border border-[var(--card-border)] bg-[var(--bg-card)]/70 py-4 text-base font-semibold text-[var(--foreground)] shadow-sm shadow-black/10"
                   >
                     Descargar respaldo
                   </button>
-                  <label className="w-full rounded-full border border-dashed border-[var(--card-border)] py-3 text-sm font-semibold text-center cursor-pointer">
+                  <label className="w-full rounded-2xl border-2 border-dashed border-[var(--card-border)]/80 bg-[var(--bg-card)]/40 py-4 text-base font-semibold text-[var(--foreground)] text-center cursor-pointer shadow-inner">
                     Importar respaldo
                     <input
                       type="file"
