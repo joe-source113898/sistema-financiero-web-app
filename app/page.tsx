@@ -67,6 +67,7 @@ export default function HomePage() {
       .gte('fecha', startDate.toISOString())
       .lte('fecha', endDate.toISOString())
       .eq('usuario_id', session?.user.id)
+      .is('objetivo_id', null)
 
     if (data) {
       let totalIngresos = 0

@@ -88,6 +88,7 @@ export function TrendChart({ vista = 'mensual', fechaInicio, fechaFin }: TrendCh
       .gte('fecha', startDate.toISOString())
       .lte('fecha', endDate.toISOString())
       .eq('usuario_id', session?.user.id)
+      .is('objetivo_id', null)
       .order('fecha', { ascending: true })
 
     if (data && data.length > 0) {

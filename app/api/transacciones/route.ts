@@ -49,7 +49,7 @@ export async function GET(request: Request) {
     query = query.gte('fecha', twelveMonthsAgo.toISOString())
   }
 
-  const { data, error } = await query.eq('usuario_id', user.id).limit(500)
+  const { data, error } = await query.eq('usuario_id', user.id).is('objetivo_id', null).limit(500)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
