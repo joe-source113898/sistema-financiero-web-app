@@ -13,6 +13,8 @@ import {
   PlusCircle,
   Target,
   Activity,
+  Edit3,
+  Trash2,
 } from 'lucide-react'
 import {
   Chart as ChartJS,
@@ -64,6 +66,7 @@ export default function AhorroInversionPage() {
   const [creatingGoal, setCreatingGoal] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [refreshing, setRefreshing] = useState(false)
 
   const [tipoMovimiento, setTipoMovimiento] = useState<'aporte' | 'retiro'>('aporte')
   const [monto, setMonto] = useState('')
@@ -73,6 +76,8 @@ export default function AhorroInversionPage() {
   const [nuevoNombre, setNuevoNombre] = useState('')
   const [nuevaMeta, setNuevaMeta] = useState('')
   const [nuevoColor, setNuevoColor] = useState('#0ea5e9')
+  const [editingGoalId, setEditingGoalId] = useState<string | null>(null)
+  const [goalFeedback, setGoalFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   const [objetivoGrafica, setObjetivoGrafica] = useState<string>('todos')
 
@@ -151,6 +156,16 @@ export default function AhorroInversionPage() {
 
   const balance = totalAportado - totalRetirado
 
+  const handleRefresh = async () => {
+    if (refreshing) return
+    setRefreshing(true)
+    try {
+      await Promise.all([fetchObjetivos(), fetchMovimientos()])
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -198,32 +213,85 @@ export default function AhorroInversionPage() {
     }
   }
 
+  const iniciarEdicionObjetivo = (objetivo: Objetivo) => {
+    setEditingGoalId(objetivo.id)
+    setNuevoNombre(objetivo.nombre)
+    setNuevaMeta(objetivo.meta ? objetivo.meta.toString() : '')
+    setNuevoColor(objetivo.color || '#0ea5e9')
+    setGoalFeedback({ type: 'success', message: 'Editando objetivo existente' })
+  }
+
+  const cancelarEdicionObjetivo = () => {
+    setEditingGoalId(null)
+    setNuevoNombre('')
+    setNuevaMeta('')
+    setGoalFeedback(null)
+  }
+
+  const handleEliminarObjetivo = async (id: string) => {
+    const confirmado = window.confirm('¿Eliminar este objetivo y sus movimientos asociados?')
+    if (!confirmado) return
+    setGoalFeedback(null)
+    try {
+      const { error: deleteError } = await supabase
+        .from('objetivos_ahorro')
+        .delete()
+        .eq('id', id)
+        .eq('usuario_id', session!.user.id)
+      if (deleteError) throw deleteError
+      if (objetivoSeleccionado === id) setObjetivoSeleccionado('')
+      if (objetivoGrafica === id) setObjetivoGrafica('todos')
+      setGoalFeedback({ type: 'success', message: 'Objetivo eliminado' })
+      fetchObjetivos()
+      fetchMovimientos()
+    } catch (err: any) {
+      setGoalFeedback({ type: 'error', message: err.message || 'Error al eliminar objetivo' })
+    } finally {
+      setTimeout(() => setGoalFeedback(null), 3000)
+    }
+  }
+
   const handleCrearObjetivo = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!nuevoNombre.trim()) {
-      setError('El nombre del objetivo es obligatorio')
+      setGoalFeedback({ type: 'error', message: 'El nombre del objetivo es obligatorio' })
       return
     }
     setCreatingGoal(true)
-    setError('')
+    setGoalFeedback(null)
     try {
-      const { error: insertError } = await supabase.from('objetivos_ahorro').insert({
-        nombre: nuevoNombre.trim(),
-        meta: nuevaMeta ? parseFloat(nuevaMeta) : null,
-        descripcion: '',
-        color: nuevoColor,
-        usuario_id: session!.user.id,
-      })
-      if (insertError) throw insertError
+      if (editingGoalId) {
+        const { error: updateError } = await supabase
+          .from('objetivos_ahorro')
+          .update({
+            nombre: nuevoNombre.trim(),
+            meta: nuevaMeta ? parseFloat(nuevaMeta) : null,
+            color: nuevoColor,
+          })
+          .eq('id', editingGoalId)
+          .eq('usuario_id', session!.user.id)
+        if (updateError) throw updateError
+        setGoalFeedback({ type: 'success', message: 'Objetivo actualizado correctamente' })
+        setEditingGoalId(null)
+      } else {
+        const { error: insertError } = await supabase.from('objetivos_ahorro').insert({
+          nombre: nuevoNombre.trim(),
+          meta: nuevaMeta ? parseFloat(nuevaMeta) : null,
+          descripcion: '',
+          color: nuevoColor,
+          usuario_id: session!.user.id,
+        })
+        if (insertError) throw insertError
+        setGoalFeedback({ type: 'success', message: 'Nuevo objetivo creado' })
+      }
       setNuevoNombre('')
       setNuevaMeta('')
-      setSuccess('Objetivo creado')
       fetchObjetivos()
     } catch (err: any) {
-      setError(err.message || 'Error al crear objetivo')
+      setGoalFeedback({ type: 'error', message: err.message || 'Error al guardar el objetivo' })
     } finally {
       setCreatingGoal(false)
-      setTimeout(() => setSuccess(''), 2500)
+      setTimeout(() => setGoalFeedback(null), 3000)
     }
   }
 
@@ -232,6 +300,7 @@ export default function AhorroInversionPage() {
       style: 'currency',
       currency: 'MXN',
       minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     })
 
   const formatDate = (iso: string) =>
@@ -321,14 +390,12 @@ export default function AhorroInversionPage() {
           </p>
         </div>
         <button
-          onClick={() => {
-            fetchMovimientos()
-            fetchObjetivos()
-          }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--card-border)] text-[var(--foreground)] hover:bg-[var(--muted-bg)] transition-colors"
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--card-border)] text-[var(--foreground)] hover:bg-[var(--muted-bg)] transition-colors disabled:opacity-60"
         >
-          <RefreshCw className="w-4 h-4" />
-          Actualizar
+          {refreshing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+          {refreshing ? 'Actualizando…' : 'Actualizar'}
         </button>
       </div>
 
@@ -388,15 +455,33 @@ export default function AhorroInversionPage() {
                     key={objetivo.id}
                     className="rounded-2xl border border-[var(--card-border)] bg-gradient-to-br from-[var(--card-bg)] to-[var(--muted-bg)] p-4 shadow"
                   >
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-start justify-between gap-3 mb-2">
                       <div>
                         <h3 className="text-lg font-semibold text-[var(--foreground)]">{objetivo.nombre}</h3>
                         {objetivo.meta && (
                           <p className="text-xs text-[var(--muted)]">Meta: {formatCurrency(objetivo.meta)}</p>
                         )}
                       </div>
-                      <Target className="w-5 h-5 text-[var(--accent)]" />
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => iniciarEdicionObjetivo(objetivo)}
+                          className="p-2 rounded-full border border-[var(--card-border)] hover:bg-[var(--muted-bg)]"
+                          title="Editar objetivo"
+                        >
+                          <Edit3 className="w-4 h-4 text-[var(--foreground)]" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleEliminarObjetivo(objetivo.id)}
+                          className="p-2 rounded-full border border-red-200/40 hover:bg-red-50/70 dark:border-red-500/40 dark:hover:bg-red-900/30"
+                          title="Eliminar objetivo"
+                        >
+                          <Trash2 className="w-4 h-4 text-rose-500" />
+                        </button>
+                      </div>
                     </div>
+                    <Target className="w-5 h-5 text-[var(--accent)] mb-2" />
                     <p className="text-2xl font-bold text-[var(--foreground)]">
                       {formatCurrency(resumen.balance)}
                     </p>
@@ -430,7 +515,7 @@ export default function AhorroInversionPage() {
         <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl shadow-xl p-6">
           <h2 className="text-lg font-semibold text-[var(--foreground)] mb-3 flex items-center gap-2">
             <PlusCircle className="w-5 h-5 text-[var(--accent)]" />
-            Nuevo objetivo
+            {editingGoalId ? 'Editar objetivo' : 'Nuevo objetivo'}
           </h2>
           <form onSubmit={handleCrearObjetivo} className="space-y-4">
             <div>
@@ -463,13 +548,33 @@ export default function AhorroInversionPage() {
                 className="h-10 w-full rounded-xl border border-[var(--card-border)] bg-transparent"
               />
             </div>
+            {goalFeedback && (
+              <div
+                className={`p-3 rounded-xl text-sm ${
+                  goalFeedback.type === 'success'
+                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200'
+                    : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-200'
+                }`}
+              >
+                {goalFeedback.message}
+              </div>
+            )}
             <button
               type="submit"
               disabled={creatingGoal}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[#0ea5e9] text-white font-semibold hover:opacity-90 transition-all disabled:opacity-60"
             >
-              {creatingGoal ? 'Guardando...' : 'Guardar objetivo'}
+              {creatingGoal ? 'Guardando...' : editingGoalId ? 'Actualizar objetivo' : 'Guardar objetivo'}
             </button>
+            {editingGoalId && (
+              <button
+                type="button"
+                onClick={cancelarEdicionObjetivo}
+                className="w-full py-2 rounded-xl border border-[var(--card-border)] text-[var(--foreground)] hover:bg-[var(--muted-bg)]"
+              >
+                Cancelar edición
+              </button>
+            )}
           </form>
         </div>
       </section>
