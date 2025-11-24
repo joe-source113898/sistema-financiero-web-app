@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 
 const CATEGORIAS_GASTOS = [
   'Alimentación', 'Transporte', 'Vivienda', 'Salud',
-  'Entretenimiento', 'Educación', 'Ahorro/inversión', 'Otros gastos'
+  'Entretenimiento', 'Educación', 'Otros gastos'
 ]
 
 const CATEGORIAS_INGRESOS = [
