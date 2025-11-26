@@ -1,9 +1,23 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Calendar, TrendingUp, DollarSign } from 'lucide-react'
 
 type Vista = 'diaria' | 'semanal' | 'mensual' | 'personalizada'
+
+const CATEGORIAS_GASTOS = [
+  'Alimentación',
+  'Transporte',
+  'Vivienda',
+  'Salud',
+  'Entretenimiento',
+  'Educación',
+  'Otros gastos',
+]
+
+const CATEGORIAS_INGRESOS = ['Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros ingresos']
+
+const METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Transferencia']
 
 interface Transaccion {
   id: string
@@ -11,8 +25,18 @@ interface Transaccion {
   tipo: 'gasto' | 'ingreso'
   categoria: string
   monto: number
+  descripcion: string | null
+  metodo_pago: string | null
+  concepto?: string
+}
+
+interface EditFormState {
+  tipo: 'gasto' | 'ingreso'
+  monto: string
+  categoria: string
   descripcion: string
   metodo_pago: string
+  fecha: string
 }
 
 interface DataViewsProps {
@@ -30,6 +54,17 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
   const [fechaFin, setFechaFin] = useState(fechaFinProp || '')
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [timeZone, setTimeZone] = useState('America/Mexico_City')
+  const [editingTx, setEditingTx] = useState<Transaccion | null>(null)
+  const [editForm, setEditForm] = useState<EditFormState>({
+    tipo: 'gasto',
+    monto: '',
+    categoria: '',
+    descripcion: '',
+    metodo_pago: 'Efectivo',
+    fecha: '',
+  })
+  const [savingEdit, setSavingEdit] = useState(false)
+  const [editMessage, setEditMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   // Estados para filtros y sorting
   const [filtroTipo, setFiltroTipo] = useState<'todos' | 'gasto' | 'ingreso'>('todos')
@@ -64,6 +99,31 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
       setTimeZone('America/Mexico_City')
     }
   }, [])
+
+  const timeZoneLabel = useMemo(() => {
+    try {
+      const parts = new Intl.DateTimeFormat('es-MX', { timeZone, timeZoneName: 'longOffset' }).formatToParts(new Date())
+      return parts.find(part => part.type === 'timeZoneName')?.value || timeZone
+    } catch (error) {
+      return timeZone
+    }
+  }, [timeZone])
+
+  const toDateTimeLocal = (value: string) => {
+    if (!value) return ''
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ''
+    const offset = date.getTimezoneOffset()
+    const local = new Date(date.getTime() - offset * 60000)
+    return local.toISOString().slice(0, 16)
+  }
+
+  const fromDateTimeLocal = (value: string) => {
+    if (!value) return ''
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ''
+    return date.toISOString()
+  }
 
   const getZonedDate = (value: string) => {
     const date = new Date(value)
@@ -108,6 +168,100 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
     }
   }
 
+  const openEditModal = (tx: Transaccion) => {
+    setEditingTx(tx)
+    setEditMessage(null)
+    setEditForm({
+      tipo: tx.tipo,
+      monto: tx.monto.toString(),
+      categoria: tx.categoria,
+      descripcion: tx.descripcion || '',
+      metodo_pago: tx.metodo_pago || 'Efectivo',
+      fecha: toDateTimeLocal(tx.fecha),
+    })
+  }
+
+  const closeEditModal = () => {
+    setEditingTx(null)
+    setEditMessage(null)
+    setSavingEdit(false)
+  }
+
+  const handleEditChange = <K extends keyof EditFormState>(field: K, value: EditFormState[K]) => {
+    setEditForm(prev => {
+      const next = { ...prev, [field]: value }
+      if (field === 'tipo') {
+        const categorias = value === 'gasto' ? CATEGORIAS_GASTOS : CATEGORIAS_INGRESOS
+        if (!categorias.includes(next.categoria)) {
+          next.categoria = ''
+        }
+      }
+      return next
+    })
+  }
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingTx) return
+
+    const montoNumber = parseFloat(editForm.monto)
+    if (!editForm.categoria) {
+      setEditMessage({ type: 'error', text: 'Selecciona una categoría' })
+      return
+    }
+    if (!editForm.fecha) {
+      setEditMessage({ type: 'error', text: 'Selecciona fecha y hora' })
+      return
+    }
+    if (Number.isNaN(montoNumber) || montoNumber <= 0) {
+      setEditMessage({ type: 'error', text: 'El monto debe ser mayor a 0' })
+      return
+    }
+
+    setSavingEdit(true)
+    setEditMessage(null)
+
+    try {
+      const fechaISO = fromDateTimeLocal(editForm.fecha)
+      if (!fechaISO) {
+        throw new Error('Fecha u hora inválida')
+      }
+
+      const payload = {
+        id: editingTx.id,
+        tipo: editForm.tipo,
+        monto: montoNumber,
+        categoria: editForm.categoria,
+        descripcion: editForm.descripcion.trim(),
+        metodo_pago: editForm.metodo_pago,
+        fecha: fechaISO,
+      }
+
+      const res = await fetch('/api/transacciones', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        throw new Error(json.error || 'No se pudo actualizar la transacción')
+      }
+      const updated: Transaccion = json.data
+      setTransacciones(prev => {
+        const next = prev.map(tx => (tx.id === updated.id ? updated : tx))
+        return next.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+      })
+      setEditMessage({ type: 'success', text: 'Transacción actualizada correctamente' })
+      setTimeout(() => {
+        closeEditModal()
+      }, 1000)
+    } catch (error: any) {
+      setEditMessage({ type: 'error', text: error.message || 'Error al actualizar la transacción' })
+    } finally {
+      setSavingEdit(false)
+    }
+  }
+
   // Calcular totales
   const totales = transacciones.reduce(
     (acc, t) => {
@@ -122,6 +276,8 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
   )
 
   const balance = totales.ingresos - totales.gastos
+
+  const categoriasEdicion = editForm.tipo === 'gasto' ? CATEGORIAS_GASTOS : CATEGORIAS_INGRESOS
 
   // Aplicar filtros y sorting
   const transaccionesFiltradas = transacciones
@@ -359,6 +515,12 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
             {transaccionesFiltradas.length} transacciones
           </div>
         </div>
+        <div className="mt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs text-[var(--muted)]">
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[var(--muted-bg)] text-[var(--foreground)]/70">
+            Zona horaria detectada: <strong className="font-semibold text-[var(--foreground)]">{timeZoneLabel}</strong>
+          </span>
+          <span>Las fechas y horas se ajustan automáticamente a la configuración de tu dispositivo.</span>
+        </div>
       </div>
 
       {/* Resumen de Totales */}
@@ -478,6 +640,9 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                         )}
                       </div>
                     </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
+                      Acciones
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-soft)]">
@@ -525,6 +690,14 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                           : 'text-red-600 dark:text-red-400'
                       }`}>
                         {tx.tipo === 'ingreso' ? '+' : '-'}${tx.monto.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => openEditModal(tx)}
+                          className="inline-flex items-center gap-2 rounded-full border border-[var(--card-border)] px-4 py-1.5 text-sm font-semibold text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors"
+                        >
+                          ✏️ Editar
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -610,6 +783,163 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
           </div>
         </div>
       </div>
+
+      {editingTx && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={closeEditModal} />
+          <form
+            onSubmit={handleEditSubmit}
+            className="relative z-10 w-full max-w-lg rounded-3xl bg-[var(--card-bg)] border border-[var(--card-border)] p-6 shadow-[0_25px_65px_rgba(15,23,42,0.65)] space-y-5"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-[var(--foreground)]">Editar transacción</h3>
+                <p className="text-sm text-[var(--muted)]">
+                  Ajusta los datos y guarda los cambios. Las fechas se guardan en tu zona horaria.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeEditModal}
+                className="rounded-full p-2 text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)]"
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="bg-[var(--muted-bg)] rounded-2xl p-4 text-xs text-[var(--muted)]">
+              Zona horaria detectada: <span className="font-semibold text-[var(--foreground)]">{timeZoneLabel}</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="flex flex-col gap-2 text-sm font-medium text-[var(--foreground)]">
+                Tipo
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleEditChange('tipo', 'gasto')}
+                    className={`flex-1 rounded-xl py-2 font-semibold ${
+                      editForm.tipo === 'gasto'
+                        ? 'bg-red-500 text-white'
+                        : 'bg-[var(--muted-bg)] text-[var(--muted)]'
+                    }`}
+                  >
+                    Gasto
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEditChange('tipo', 'ingreso')}
+                    className={`flex-1 rounded-xl py-2 font-semibold ${
+                      editForm.tipo === 'ingreso'
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-[var(--muted-bg)] text-[var(--muted)]'
+                    }`}
+                  >
+                    Ingreso
+                  </button>
+                </div>
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-medium text-[var(--foreground)]">
+                Monto (MXN)
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={editForm.monto}
+                  onChange={(e) => handleEditChange('monto', e.target.value)}
+                  className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2 text-[var(--foreground)]"
+                  required
+                />
+              </label>
+            </div>
+
+            <label className="flex flex-col gap-2 text-sm font-medium text-[var(--foreground)]">
+              Categoría
+              <select
+                value={editForm.categoria}
+                onChange={(e) => handleEditChange('categoria', e.target.value)}
+                className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2 text-[var(--foreground)]"
+                required
+              >
+                <option value="">Selecciona...</option>
+                {categoriasEdicion.map((categoria) => (
+                  <option key={categoria} value={categoria}>
+                    {categoria}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-2 text-sm font-medium text-[var(--foreground)]">
+              Descripción (opcional)
+              <input
+                type="text"
+                value={editForm.descripcion}
+                onChange={(e) => handleEditChange('descripcion', e.target.value)}
+                placeholder="Descripción visible en reportes"
+                className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2 text-[var(--foreground)]"
+              />
+            </label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="flex flex-col gap-2 text-sm font-medium text-[var(--foreground)]">
+                Método de pago
+                <select
+                  value={editForm.metodo_pago}
+                  onChange={(e) => handleEditChange('metodo_pago', e.target.value)}
+                  className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2 text-[var(--foreground)]"
+                >
+                  {METODOS_PAGO.map((metodo) => (
+                    <option key={metodo} value={metodo}>
+                      {metodo}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-medium text-[var(--foreground)]">
+                Fecha y hora
+                <input
+                  type="datetime-local"
+                  value={editForm.fecha}
+                  onChange={(e) => handleEditChange('fecha', e.target.value)}
+                  className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2 text-[var(--foreground)]"
+                  required
+                />
+              </label>
+            </div>
+
+            {editMessage && (
+              <div
+                className={`rounded-2xl px-4 py-3 text-sm ${
+                  editMessage.type === 'success'
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-red-500/10 text-red-300 border border-red-500/30'
+                }`}
+              >
+                {editMessage.text}
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeEditModal}
+                className="rounded-full border border-[var(--card-border)] px-5 py-2 font-semibold text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--accent)]"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={savingEdit}
+                className="rounded-full bg-[var(--accent)] px-5 py-2 font-semibold text-white shadow-lg shadow-[var(--accent)]/40 disabled:opacity-70"
+              >
+                {savingEdit ? 'Guardando...' : 'Guardar cambios'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   )
 }

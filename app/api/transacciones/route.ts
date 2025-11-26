@@ -57,3 +57,52 @@ export async function GET(request: Request) {
 
   return NextResponse.json({ data, vista })
 }
+
+export async function PATCH(request: Request) {
+  const cookieStore = getCookieStore()
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore } as any)
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  }
+
+  const body = await request.json()
+  const { id, tipo, monto, categoria, descripcion, metodo_pago, fecha } = body
+
+  if (!id) {
+    return NextResponse.json({ error: 'ID de transacción requerido' }, { status: 400 })
+  }
+  if (!tipo || !categoria || !metodo_pago || !fecha || typeof monto !== 'number') {
+    return NextResponse.json({ error: 'Datos incompletos para actualizar la transacción' }, { status: 400 })
+  }
+
+  const descripcionLimpia =
+    typeof descripcion === 'string' && descripcion.trim().length > 0 ? descripcion.trim() : null
+  const concepto = descripcionLimpia || `${tipo === 'ingreso' ? 'Ingreso' : 'Gasto'} - ${categoria}`
+
+  const { data, error } = await supabase
+    .from('transacciones')
+    .update({
+      tipo,
+      monto,
+      categoria,
+      descripcion: descripcionLimpia,
+      concepto,
+      metodo_pago,
+      fecha,
+    })
+    .eq('id', id)
+    .eq('usuario_id', user.id)
+    .select('*')
+    .single()
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  return NextResponse.json({ data })
+}

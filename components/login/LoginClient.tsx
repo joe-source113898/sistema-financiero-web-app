@@ -59,7 +59,7 @@ export function LoginClient() {
         <div className="rounded-3xl border border-white/20 bg-[rgba(24,32,52,0.9)] shadow-[0_25px_70px_rgba(5,9,18,0.55)] backdrop-blur-2xl p-6 sm:p-8 space-y-8 text-white">
           <div className="text-center space-y-3">
             <div className="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-blue-500/40">
-              🏛️
+              💰
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Sistema financiero</h1>
