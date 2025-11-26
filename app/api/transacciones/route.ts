@@ -104,10 +104,26 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  const updated = Array.isArray(data) ? data[0] : data
+  let updated = Array.isArray(data) ? data[0] : data
 
   if (!updated) {
-    return NextResponse.json({ error: 'Transacción no encontrada' }, { status: 404 })
+    const { data: fetched, error: fetchError } = await supabase
+      .from('transacciones')
+      .select('*')
+      .eq('id', id)
+      .eq('usuario_id', user.id)
+      .limit(1)
+      .maybeSingle()
+
+    if (fetchError) {
+      return NextResponse.json({ error: fetchError.message }, { status: 500 })
+    }
+
+    if (!fetched) {
+      return NextResponse.json({ error: 'Transacción no encontrada' }, { status: 404 })
+    }
+
+    updated = fetched
   }
 
   return NextResponse.json({ data: updated })
