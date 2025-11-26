@@ -125,23 +125,16 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
     return date.toISOString()
   }
 
-  const getZonedDate = (value: string) => {
-    const date = new Date(value)
-    return new Date(date.toLocaleString('en-US', { timeZone }))
-  }
-
   const formatDate = (value: string, options?: Intl.DateTimeFormatOptions) => {
-    const target = getZonedDate(value)
-    const defaultOptions = {
-      dateStyle: 'medium' as const,
-      timeStyle: 'short' as const,
-      timeZone,
+    if (!value) return ''
+    const target = new Date(value)
+    if (Number.isNaN(target.getTime())) return value
+    const defaultOptions: Intl.DateTimeFormatOptions = {
+      dateStyle: 'medium',
+      timeStyle: 'short',
     }
-    const baseOptions: Intl.DateTimeFormatOptions = options
-      ? { ...options, timeZone }
-      : defaultOptions
-
-    return new Intl.DateTimeFormat('es-MX', baseOptions).format(target)
+    const baseOptions: Intl.DateTimeFormatOptions = options ? { ...options } : defaultOptions
+    return new Intl.DateTimeFormat('es-MX', { ...baseOptions, timeZone }).format(target)
   }
 
   const fetchData = async () => {
@@ -343,7 +336,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
     const grupos: { [key: string]: Transaccion[] } = {}
 
     transaccionesPaginadas.forEach((t) => {
-      const fecha = getZonedDate(t.fecha)
+      const fecha = new Date(t.fecha)
       let key = ''
 
       if (vista === 'diaria') {
