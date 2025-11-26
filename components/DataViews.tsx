@@ -100,6 +100,16 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
     }
   }, [])
 
+  const parseDateValue = (value: string) => {
+    if (!value) return null
+    const trimmed = value.trim()
+    const hasTimeZone = /([zZ]|[+-]\d{2}:?\d{2})$/.test(trimmed)
+    const normalized = hasTimeZone ? trimmed : `${trimmed}Z`
+    const date = new Date(normalized)
+    if (Number.isNaN(date.getTime())) return null
+    return date
+  }
+
   const timeZoneLabel = useMemo(() => {
     try {
       const formatLabel = (timeZoneName: Intl.DateTimeFormatOptions['timeZoneName']) => {
@@ -114,9 +124,8 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
   }, [timeZone])
 
   const toDateTimeLocal = (value: string) => {
-    if (!value) return ''
-    const date = new Date(value)
-    if (Number.isNaN(date.getTime())) return ''
+    const date = parseDateValue(value)
+    if (!date) return ''
     const offset = date.getTimezoneOffset()
     const local = new Date(date.getTime() - offset * 60000)
     return local.toISOString().slice(0, 16)
@@ -130,9 +139,8 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
   }
 
   const formatDate = (value: string, options?: Intl.DateTimeFormatOptions) => {
-    if (!value) return ''
-    const target = new Date(value)
-    if (Number.isNaN(target.getTime())) return value
+    const target = parseDateValue(value)
+    if (!target) return value || ''
     const defaultOptions: Intl.DateTimeFormatOptions = {
       dateStyle: 'medium',
       timeStyle: 'short',
@@ -246,7 +254,11 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
       const updated: Transaccion = json.data
       setTransacciones(prev => {
         const next = prev.map(tx => (tx.id === updated.id ? updated : tx))
-        return next.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+        return next.sort((a, b) => {
+          const dateA = parseDateValue(a.fecha)?.getTime() || 0
+          const dateB = parseDateValue(b.fecha)?.getTime() || 0
+          return dateB - dateA
+        })
       })
       setEditMessage({ type: 'success', text: 'Transacción actualizada correctamente' })
       setTimeout(() => {
@@ -286,8 +298,8 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
       switch (ordenColumna) {
         case 'fecha':
-          valorA = new Date(a.fecha).getTime()
-          valorB = new Date(b.fecha).getTime()
+          valorA = parseDateValue(a.fecha)?.getTime() || 0
+          valorB = parseDateValue(b.fecha)?.getTime() || 0
           break
         case 'tipo':
           valorA = a.tipo
@@ -340,7 +352,8 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
     const grupos: { [key: string]: Transaccion[] } = {}
 
     transaccionesPaginadas.forEach((t) => {
-      const fecha = new Date(t.fecha)
+      const fecha = parseDateValue(t.fecha)
+      if (!fecha) return
       let key = ''
 
       if (vista === 'diaria') {
