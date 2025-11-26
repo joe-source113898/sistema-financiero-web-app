@@ -216,7 +216,7 @@ export default function AhorroInversionPage() {
   const iniciarEdicionObjetivo = (objetivo: Objetivo) => {
     setEditingGoalId(objetivo.id)
     setNuevoNombre(objetivo.nombre)
-    setNuevaMeta(objetivo.meta ? objetivo.meta.toString() : '')
+    setNuevaMeta(objetivo.meta ? objetivo.meta.toFixed(2) : '')
     setNuevoColor(objetivo.color || '#0ea5e9')
     setGoalFeedback({ type: 'success', message: 'Editando objetivo existente' })
   }
@@ -536,7 +536,7 @@ export default function AhorroInversionPage() {
                 value={nuevaMeta}
                 onChange={(e) => setNuevaMeta(e.target.value)}
                 className="w-full p-3 rounded-xl border border-[var(--card-border)] bg-transparent text-[var(--foreground)] focus:ring-2 focus:ring-[var(--accent)]"
-                placeholder="5000"
+                placeholder="5000.00"
               />
             </div>
             <div>

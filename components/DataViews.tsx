@@ -102,8 +102,12 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
   const timeZoneLabel = useMemo(() => {
     try {
-      const parts = new Intl.DateTimeFormat('es-MX', { timeZone, timeZoneName: 'longOffset' }).formatToParts(new Date())
-      return parts.find(part => part.type === 'timeZoneName')?.value || timeZone
+      const formatLabel = (timeZoneName: Intl.DateTimeFormatOptions['timeZoneName']) => {
+        const formatter = new Intl.DateTimeFormat('es-MX', { timeZone, timeZoneName })
+        const parts = formatter.formatToParts(new Date())
+        return parts.find(part => part.type === 'timeZoneName')?.value
+      }
+      return formatLabel('longGeneric') || formatLabel('shortGeneric') || formatLabel('longOffset') || timeZone
     } catch (error) {
       return timeZone
     }
@@ -564,7 +568,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
           <div key={periodo} className="bg-[var(--card-bg)] rounded-2xl shadow-[0_20px_45px_rgba(15,23,42,0.06)] border border-[var(--card-border)] overflow-hidden">
             <div className="px-6 py-4 bg-[var(--accent-soft)] border-b border-[var(--card-border)]">
               <div className="flex justify-between items-center">
-                <h4 className="text-lg font-bold text-[#111111]">{periodo}</h4>
+                <h4 className="text-lg font-bold text-[var(--foreground)] dark:text-white">{periodo}</h4>
                 <span className={`font-bold ${totalPeriodo >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                   ${totalPeriodo.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                 </span>
@@ -649,13 +653,18 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                       }`}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-main)]">
-                        {formatDate(tx.fecha, {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+                        <div className="flex flex-col">
+                          <span>
+                            {formatDate(tx.fecha, {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                          <span className="text-xs text-[var(--muted)]">{timeZoneLabel}</span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
@@ -782,7 +791,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={closeEditModal} />
           <form
             onSubmit={handleEditSubmit}
-            className="relative z-10 w-full max-w-lg rounded-3xl bg-[var(--card-bg)] border border-[var(--card-border)] p-6 shadow-[0_25px_65px_rgba(15,23,42,0.65)] space-y-5"
+            className="relative z-10 w-full max-w-2xl sm:max-w-lg rounded-3xl bg-[var(--card-bg)] border border-[var(--card-border)] p-4 sm:p-6 shadow-[0_25px_65px_rgba(15,23,42,0.65)] space-y-5 max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-start justify-between">
               <div>
@@ -899,6 +908,18 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                   className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2 text-[var(--foreground)]"
                   required
                 />
+                {editForm.fecha && (
+                  <span className="text-xs text-[var(--muted)]">
+                    Se guardará como{' '}
+                    <strong className="font-semibold text-[var(--foreground)]">
+                      {formatDate(fromDateTimeLocal(editForm.fecha), {
+                        dateStyle: 'long',
+                        timeStyle: 'short',
+                      })}
+                    </strong>{' '}
+                    ({timeZoneLabel})
+                  </span>
+                )}
               </label>
             </div>
 

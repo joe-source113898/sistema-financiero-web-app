@@ -98,15 +98,17 @@ export async function PATCH(request: Request) {
     .eq('id', id)
     .eq('usuario_id', user.id)
     .select('*')
-    .maybeSingle()
+    .limit(1)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  if (!data) {
+  const updated = Array.isArray(data) ? data[0] : data
+
+  if (!updated) {
     return NextResponse.json({ error: 'Transacción no encontrada' }, { status: 404 })
   }
 
-  return NextResponse.json({ data })
+  return NextResponse.json({ data: updated })
 }
