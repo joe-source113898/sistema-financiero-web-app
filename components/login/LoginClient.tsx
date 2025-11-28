@@ -56,21 +56,21 @@ export function LoginClient() {
   return (
     <main className="min-h-svh flex items-center justify-center" style={safeAreaStyle}>
       <section className="w-full max-w-md mx-auto px-4">
-        <div className="rounded-3xl border border-white/20 bg-[rgba(24,32,52,0.9)] shadow-[0_25px_70px_rgba(5,9,18,0.55)] backdrop-blur-2xl p-6 sm:p-8 space-y-8 text-white">
+        <div className="rounded-3xl border border-white/25 bg-[rgba(20,28,58,0.85)] shadow-[0_30px_80px_rgba(3,7,18,0.65)] backdrop-blur-3xl p-6 sm:p-8 space-y-8 text-white">
           <div className="text-center space-y-3">
             <div className="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-blue-500/40">
               💰
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white drop-shadow-lg">Sistema financiero</h1>
-              <p className="text-sm text-white drop-shadow-lg">Dashboard financiero empresarial</p>
+              <h1 className="text-3xl font-black text-white tracking-tight drop-shadow-[0_5px_25px_rgba(14,165,233,0.45)]">Sistema financiero</h1>
+              <p className="text-base text-white/90 drop-shadow-lg">Dashboard financiero empresarial</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-white drop-shadow mb-2">
+                <label htmlFor="email" className="block text-sm font-semibold text-white drop-shadow mb-2 tracking-wide">
                   Correo electrónico
                 </label>
                 <input
@@ -79,14 +79,14 @@ export function LoginClient() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tucorreo@example.com"
-                  className="w-full rounded-2xl border border-white/30 bg-white/10 px-4 py-3 text-white placeholder-[#9CA3AF] focus:ring-2 focus:ring-sky-400 focus:border-transparent transition"
+                  className="w-full rounded-2xl border border-white/40 bg-white/15 px-4 py-3 text-white placeholder-white/70 focus:ring-2 focus:ring-sky-300/80 focus:border-transparent ring-offset-2 ring-offset-white/10 transition-shadow drop-shadow-[0_10px_30px_rgba(59,130,246,0.25)]"
                   autoFocus
                   required
                   autoComplete="email"
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-white drop-shadow mb-2">
+                <label htmlFor="password" className="block text-sm font-semibold text-white drop-shadow mb-2 tracking-wide">
                   Contraseña de acceso
                 </label>
                 <div className="relative">
@@ -96,7 +96,7 @@ export function LoginClient() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Ingresa tu contraseña"
-                    className="w-full rounded-2xl border border-white/30 bg-white/10 px-4 py-3 pr-12 text-white placeholder-[#9CA3AF] focus:ring-2 focus:ring-sky-400 focus:border-transparent transition"
+                    className="w-full rounded-2xl border border-white/40 bg-white/15 px-4 py-3 pr-12 text-white placeholder-white/70 focus:ring-2 focus:ring-sky-300/80 focus:border-transparent ring-offset-2 ring-offset-white/10 transition-shadow drop-shadow-[0_10px_30px_rgba(59,130,246,0.25)]"
                     required
                     autoComplete="current-password"
                   />
@@ -121,13 +121,13 @@ export function LoginClient() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-2xl bg-[#3b82f6] hover:bg-[#2563eb] text-white py-3 font-semibold shadow-[0_8px_30px_rgba(37,99,235,0.45)] transition active:scale-[0.99] disabled:opacity-60"
+                  className="w-full rounded-2xl bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 hover:from-sky-300 hover:via-blue-400 hover:to-indigo-400 text-white py-3 font-semibold shadow-[0_15px_45px_rgba(59,130,246,0.45)] transition active:scale-[0.985] disabled:opacity-60"
             >
               {loading ? 'Ingresando...' : 'Ingresar al dashboard'}
             </button>
           </form>
 
-          <p className="text-center text-xs text-white">Sistema protegido © 2025</p>
+          <p className="text-center text-xs text-white/80 tracking-wide">Sistema protegido © 2025</p>
         </div>
       </section>
     </main>
