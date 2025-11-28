@@ -159,6 +159,39 @@ git clone https://github.com/danielcarreon/sistema-financiero-app.git
 cd sistema-financiero-app
 ```
 
+### ⚙️ Script de automatización local
+
+Para repetir más rápido los pasos de instalación, lint y migraciones puedes usar el script `scripts/run-local-setup.sh`.
+
+```bash
+chmod +x scripts/run-local-setup.sh       # Solo la primera vez
+./scripts/run-local-setup.sh              # Ejecuta lint + supabase migration up
+```
+
+El script hace lo siguiente:
+
+1. Carga `nvm` desde `node-nvm-tools` (si existe) o usa `NODE_VERSION`/`PACKAGE_MANAGER` si defines esas variables de entorno.
+2. Instala dependencias con `npm install` (o `pnpm install` si lo prefieres).
+3. Ejecuta `npm run lint` / `pnpm lint`.
+4. Arranca Supabase local si no está corriendo y aplica las migraciones (`supabase migration up`).
+
+> Si no tienes la CLI de Supabase instalada (`brew install supabase/tap/supabase`), el script mostrará una advertencia y omitirá esa parte.
+
+#### ¿No tienes Node instalado?
+
+Ejecuta primero el bootstrap que deja todo en la carpeta `tools/` del proyecto:
+
+```bash
+chmod +x scripts/bootstrap-tools.sh
+./scripts/bootstrap-tools.sh
+```
+
+Este script:
+
+1. Descarga NVM dentro de `tools/node-nvm`.
+2. Instala la versión de Node indicada por `NODE_VERSION` (por defecto 18).
+3. Ejecuta automáticamente `scripts/run-local-setup.sh`.
+
 ### 📱 PWA lista para Android e iOS
 
 - La app ahora genera un `manifest.webmanifest`, íconos adaptativos y un `service worker` con `next-pwa`.  

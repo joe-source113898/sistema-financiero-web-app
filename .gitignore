@@ -213,3 +213,6 @@ cython_debug/
 dashboard-zaziltunich-OLD/
 dashboard-zaziltunich-CLEAN/
 .vercel
+
+# Local toolchain (NVM installed via bootstrap script)
+tools/node-nvm/
