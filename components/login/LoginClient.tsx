@@ -79,7 +79,7 @@ export function LoginClient() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tucorreo@example.com"
-                  className="w-full rounded-2xl border border-white/40 bg-white/15 px-4 py-3 text-white placeholder-white/70 focus:ring-2 focus:ring-sky-300/80 focus:border-transparent ring-offset-2 ring-offset-white/10 transition-shadow drop-shadow-[0_10px_30px_rgba(59,130,246,0.25)]"
+                  className="w-full rounded-2xl border border-white/40 bg-white/15 px-4 py-3 text-white placeholder-white/70 focus:ring-2 focus:ring-sky-300/80 focus:border-transparent ring-offset-2 ring-offset-white/10 transition-shadow shadow-[0_10px_30px_rgba(59,130,246,0.25)]"
                   autoFocus
                   required
                   autoComplete="email"
@@ -96,7 +96,7 @@ export function LoginClient() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Ingresa tu contraseña"
-                    className="w-full rounded-2xl border border-white/40 bg-white/15 px-4 py-3 pr-12 text-white placeholder-white/70 focus:ring-2 focus:ring-sky-300/80 focus:border-transparent ring-offset-2 ring-offset-white/10 transition-shadow drop-shadow-[0_10px_30px_rgba(59,130,246,0.25)]"
+                    className="w-full rounded-2xl border border-white/40 bg-white/15 px-4 py-3 pr-12 text-white placeholder-white/70 focus:ring-2 focus:ring-sky-300/80 focus:border-transparent ring-offset-2 ring-offset-white/10 transition-shadow shadow-[0_10px_30px_rgba(59,130,246,0.25)]"
                     required
                     autoComplete="current-password"
                   />
