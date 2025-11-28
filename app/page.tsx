@@ -102,7 +102,13 @@ export default function HomePage() {
       case 'mensual':
         return 'Últimos 30 días'
       case 'personalizada':
-        return `${fechaInicio} - ${fechaFin}`
+        if (rangoFechas.inicio && rangoFechas.fin) {
+          return `Del ${rangoFechas.inicio} al ${rangoFechas.fin}`
+        }
+        if (fechaInicio && fechaFin) {
+          return `${fechaInicio} - ${fechaFin}`
+        }
+        return 'Rango personalizado'
       default:
         return 'Últimos 30 días'
     }
@@ -182,22 +188,34 @@ export default function HomePage() {
       </section>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard title="Ingresos (últimos 30 días)" value={kpis.ingresos} icon="income" color="green" />
-        <KPICard title="Gastos (últimos 30 días)" value={kpis.gastos} icon="expense" color="red" />
-        <KPICard title="Balance neto" value={kpis.balance} icon="balance" color="blue" />
-        <KPICard title="Total de transacciones" value={kpis.transacciones} icon="transactions" color="blue" />
+        {([
+          { title: 'Ingresos', value: kpis.ingresos, icon: 'income', color: 'green' },
+          { title: 'Gastos', value: kpis.gastos, icon: 'expense', color: 'red' },
+          { title: 'Balance neto', value: kpis.balance, icon: 'balance', color: 'blue' },
+          { title: 'Total de transacciones', value: kpis.transacciones, icon: 'transactions', color: 'blue' },
+        ] as const).map((card) => (
+          <KPICard
+            key={card.title}
+            title={`${card.title} (${getVistaLabel()})`}
+            value={card.value}
+            icon={card.icon}
+            color={card.color}
+          />
+        ))}
       </section>
 
       <section className="panel space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold flex items-center gap-2 text-[var(--text-main)]">
             <TrendingUp className="w-5 h-5 text-[var(--accent)]" />
-            Tendencia de los últimos días
+            Tendencia · {getVistaLabel()}
           </h3>
-          <span className="text-sm text-[var(--text-muted)]">{kpis.transacciones} transacciones analizadas</span>
+          <span className="text-sm text-[var(--text-muted)]">
+            {kpis.transacciones} transacciones en {getVistaLabel()}
+          </span>
         </div>
         <div className="min-h-[280px]">
-          <TrendChart vista={vista} />
+          <TrendChart vista={vista} fechaInicio={fechaInicio} fechaFin={fechaFin} />
         </div>
       </section>
 
