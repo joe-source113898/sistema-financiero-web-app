@@ -62,15 +62,15 @@ export function LoginClient() {
               💰
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Sistema financiero</h1>
-              <p className="text-sm text-white/60">Dashboard financiero empresarial</p>
+              <h1 className="text-2xl font-bold text-white drop-shadow-lg">Sistema financiero</h1>
+              <p className="text-sm text-white drop-shadow-lg">Dashboard financiero empresarial</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-white drop-shadow mb-2">
                   Correo electrónico
                 </label>
                 <input
@@ -86,7 +86,7 @@ export function LoginClient() {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-white drop-shadow mb-2">
                   Contraseña de acceso
                 </label>
                 <div className="relative">
@@ -127,7 +127,7 @@ export function LoginClient() {
             </button>
           </form>
 
-          <p className="text-center text-xs text-white/70">Sistema protegido © 2025</p>
+          <p className="text-center text-xs text-white">Sistema protegido © 2025</p>
         </div>
       </section>
     </main>

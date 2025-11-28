@@ -83,6 +83,7 @@ body {
     linear-gradient(180deg, #f0f3ff 0%, #f8f9fd 40%, var(--bg-page) 100%);
   color: var(--text-main);
   font-family: var(--font-geist-sans), sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body.login-view {
@@ -125,6 +126,26 @@ body.login-view header {
 .dark .panel {
   background: var(--card-bg);
   border-color: var(--border-soft);
+}
+
+input,
+textarea,
+select {
+  font-size: 16px;
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+  touch-action: manipulation;
+  background-color: var(--card-bg);
+  color: var(--text-main);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
 .shadow-soft {
